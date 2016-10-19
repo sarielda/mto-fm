@@ -1,0 +1,12 @@
+# Ignore mac chache file
+.DS_Store
+
+# Ignore derived files
+/app/**/*.js
+/app/**/*.map
+/typings/
+
+/.bin/
+/node_modules
+/npm-debug.log*
+/dist/

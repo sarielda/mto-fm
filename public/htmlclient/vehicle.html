@@ -1,0 +1,30 @@
+	<div>
+		<img ng-src="{{vehicles[selectedIndex].properties.thumbnailURL}}">
+		<h4 class="marginTop">Specifications</h4>
+		<ul class="carSpecsList">
+			<li>
+				<strong>Rating:</strong> 
+				<b class="stars ng-scope" ng-repeat="i in [0,1,2,3,4].slice(0, vehicles[selectedIndex].properties.stars)">O</b>
+			</li>
+			
+			<li class="ng-binding">
+				<strong>Price:</strong> ${{vehicles[selectedIndex].properties.hourlyRate}}/hr, ${{vehicles[selectedIndex].properties.dailyRate}}/day
+			</li>
+			
+			<li class="ng-binding">
+				<strong>Make &amp; Model:</strong> {{vehicles[selectedIndex].model}}
+			</li>
+			
+			<li class="ng-binding">
+				<strong>Year:</strong> {{vehicles[selectedIndex].properties.year}}
+			</li>
+			
+			<li class="ng-binding">
+				<strong>Mileage:</strong> {{vehicles[selectedIndex].properties.mileage}}
+			</li>
+
+			<li class="last ng-binding">
+				<strong>Serial Number:</strong>{{vehicles[selectedIndex].serial_number}}
+			</li>
+		</ul>
+	</div>

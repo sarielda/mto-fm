@@ -1,0 +1,27 @@
+<div class="dashItem">
+  <div class="dashTitleBar">
+      <h3>Cars by Status <span *ngIf="selectGroup">({{groupPropName}}: {{selectGroupName}})</span> </h3>
+  </div>
+
+  <div *ngIf="!selectGroup">No selection.</div>
+  <div *ngIf="selectGroup && devices && devices.length == 0">No device in selection.</div>
+  <table *ngIf="selectGroup && devices && devices.length &gt; 0"
+    class="table table-hover table-striped table-condensed table-responsive">
+    <thead>
+  		<tr>
+  			<th>#</th>
+  			<th>ID</th>
+        <th>Fuel</th>
+        <th>Engine Oil Temperature</th>
+  		</tr>
+  	</thead>
+    <tbody>
+  		<tr *ngFor="let device of devices; let i = index">
+  			<td class="alignCenter">{{i + 1}}</td>
+  			<td class="alignCenter"><a [routerLink]="['/carStatus', ''+device.deviceID]">{{device.vehicle?.serial_number || device.deviceID}}</a></td>
+        <td class="alignCenter">{{device.latestSample?.props?.fuel}}</td>
+        <td class="alignCenter">{{((device.latestSample?.props?.engineTemp||0)*9/5+32).toPrecision(3)}}</td>
+  		</tr>
+  	</tbody>
+  </table>
+</div>

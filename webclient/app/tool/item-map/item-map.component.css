@@ -1,0 +1,51 @@
+/**
+ * Copyright 2016 IBM Corp. All Rights Reserved.
+ *
+ * Licensed under the IBM License, a copy of which may be obtained at:
+ *
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ *
+ * You may not use this file except in compliance with the license.
+ */
+.carMonitorMap .itemTool {
+    cursor: pointer;
+    position: absolute;
+    top: 90px;
+    left: 30px;
+    z-index: 10;
+    padding: 10px 20px;
+    background: #fff;
+    font-weight: 500;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+.carMonitorMap .itemToolContent {
+    position: absolute;
+    top: 130px;
+    left: 30px;
+    z-index: 10;
+    padding: 10px 10px;
+    background: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.toolCollapsed {
+  margin-right: 8px;
+  position: relative;
+  bottom: 5px;
+  font-size:0;
+  border-right: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 10px solid #b0b0b0;
+}
+
+.toolExpanded {
+  margin-right: 8px;
+  position: relative;
+  top: 0px;
+  font-size:0;
+  border-bottom: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 10px solid #b0b0b0;
+}

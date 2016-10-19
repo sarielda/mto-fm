@@ -1,0 +1,12 @@
+<div class="container-50 noTopPadding container-30-right">
+    <form class="floatRight">
+      <select [(ngModel)]="selectedArea" name="selectedArea">
+        <option *ngFor="let area of areas" [ngValue]="area">{{area.name}}</option>
+      </select>
+    </form>
+
+  <h4>EVENT EDITOR</h4>
+</div>
+<div class="marginTop" style="height: 80%;">
+  <fmdash-item-map [region]="selectedArea" (extentChanged)="onMapExtentChanged($event)"></fmdash-item-map>
+</div>

@@ -1,0 +1,69 @@
+<div class="container-50 noTopPadding container-30-right">
+	<div *ngIf="showInput">
+		<area-select [(extent)]="extent" (areaChanged)="onAreaChanged($event)"></area-select>
+		<div>
+			Filter: 
+			<select [value]="prop" (change)="onPropChanged($event)">
+				<option *ngFor="let alertProp of alertProps"
+					value="{{alertProp.getId()}}">{{alertProp.getLabel()}}</option>
+			</select>
+			<select #valueSelect [value]="value" (change)="onValueChanged($event)">
+				<option *ngFor="let alertValue of alertValues"
+					value="{{alertValue.getId()}}">{{alertValue.getLabel()}}</option>
+			</select>
+			<label>
+				<input type="checkbox" [(ngModel)]="includeClosed" (change)="onIncludeClosedChanged($event)"/>
+				Include Closed Alerts
+			</label>
+		</div>
+	</div>
+	
+	<span class="col-xs-12 loading" [hidden]="!requestSending"><img src="/images/loading.gif"></span>
+
+	<table class="table table-hover table-striped table-condensed table-responsive marginTop">
+		<thead>
+			<tr>
+				<th class="firstRow">#</th>
+				<th>
+					<span class="sortable" (click)="onOrderBy('ts')">From</span>
+					<span [ngClass]="orderByKey==='ts'?(ascendingOrder?'ascending_order':'descending_order'):'none_order'"></span>
+				</th>
+				<th *ngIf="includeClosed">
+					<span class="sortable" (click)="onOrderBy('closed_ts')">To</span>
+					<span [ngClass]="orderByKey==='closed_ts'?(ascendingOrder?'ascending_order':'descending_order'):'none_order'"></span>
+				</th>
+				<th>
+					<span class="sortable" (click)="onOrderBy('severity')">Severity</span>
+					<span [ngClass]="orderByKey==='severity'?(ascendingOrder?'ascending_order':'descending_order'):'none_order'"></span>
+				</th>
+				<th>
+					<span class="sortable" (click)="onOrderBy('mo_id')">Vehicle ID</span>
+					<span [ngClass]="orderByKey==='mo_id'?(ascendingOrder?'ascending_order':'descending_order'):'none_order'"></span>
+				</th>
+				<th>
+					<span class="sortable" (click)="onOrderBy('description')">Notes</span>
+					<span [ngClass]="orderByKey==='description'?(ascendingOrder?'ascending_order':'descending_order'):'none_order'"></span>
+				</th>
+				<th>
+					<span class="sortable" (click)="onOrderBy('simulated')">Simulated</span>
+					<span [ngClass]="orderByKey==='simulated'?(ascendingOrder?'ascending_order':'descending_order'):'none_order'"></span>
+				</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let alert of (fleetalerts|orderBy:orderByKey:ascendingOrder);let i=index">
+				<td class="firstRow">{{i+1}}</td>
+				<td>{{alert.ts|moment:"MMM DD/YY, HH:mm:ss"}}</td>
+				<td *ngIf="includeClosed">{{alert.closed_ts>0?(alert.closed_ts|moment:"MMM DD/YY, HH:mm:ss"):"-"}}</td>
+				<td [ngClass]="alert.severity === 'Info' ? 'blue' : alert.severity === 'Medium' ? 'green' : 'red'" >{{alert.severity}}</td>
+				<td><a href="javascript:void(0)" (click)="onMoIdClicked($event, alert.mo_id)">{{alert.serial_number || alert.mo_id}}</a></td>
+				<td>{{alert.description}}</td>
+				<td>{{alert.simulated ? "Yes" : "No"}}</td>
+				<td class="alignCenter actionTD">
+					<a class="dropdown_base icon-status" [routerLink]="['/carStatus', ''+alert.mo_id]" title="Show Car Status"></a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

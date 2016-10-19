@@ -1,0 +1,59 @@
+<header>
+    <div class="container noTopPadding">
+        <div class="floatLeft productTitle productTitleWide">
+            <a ui-sref="overview"><strong>IBM IoT for Automotive - Fleet Management Starter Application</strong> - Monitoring</a>
+        </div>
+        <div class="floatLeft productTitle productTitleNarrow">
+            <a ui-sref="overview">IBM IoT for Automotive</a>
+        </div>
+
+        <div class="floatRight">
+            <div class="userImg medium-hide">
+                <img src="img/user.jpg" class="circularImg" />
+            </div>
+
+            <p class="floatRight medium-hide" id="userName">
+                Archie
+            </p>
+
+            <p class="floatRight medium-show large-hide" id="hamburger">
+                <a href="#" class="btn btn-demo em-Modal-Call" rel="loginModal">
+                    <i class="icon-menu"></i>
+                </a>
+            </p>
+        </div>
+    </div>
+</header>
+
+<div class="content">
+    <aside class="sidebar" ng-controller="sidebar">
+        <ul class="sidebarItems">
+            <li *ngFor="let sidebarItem of sidebarItems" routerLinkActive="active">
+                <a [routerLink]="[sidebarItem.route]"><i class="{{sidebarItem.icon}}"></i>{{sidebarItem.title}}</a>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="mainContent">
+        <router-outlet></router-outlet>
+    </div>
+</div>
+
+<div class="em-Modal" id="loginModal" ng-controller="sidebar">
+    <div class="em-Modal-Content">
+        <div class="em-Modal-Close">
+            <a href="#">
+                <i class="icon-close"></i>
+            </a>
+        </div>
+
+        <ul class="modalMenu">
+            <li *ngFor="let sidebarItem of sidebarItems" routerLinkActive="active">
+                <a [routerLink]="[sidebarItem.route]">
+                    <i class="{{sidebarItem.icon}} iconBlock"></i>
+                    {{sidebarItem.title}}
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

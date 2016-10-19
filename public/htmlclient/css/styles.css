@@ -1,0 +1,67 @@
+/**
+ * Copyright 2016 IBM Corp. All Rights Reserved.
+ *
+ * Licensed under the IBM License, a copy of which may be obtained at:
+ *
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ *
+ * You may not use this file except in compliance with the license.
+ */
+header {
+    position: fixed;
+    z-index: 1000;
+    display: table;
+    background: #1b3649;
+    color: #fff;
+    width: 100%;
+	top: 0;
+    height: 50px;
+}
+header .productTitle {
+	text-align: center;
+	padding-top: 15px;
+	width: 100%;
+}
+header .productTitle a {
+    color: #fff;
+    font-size: medium;
+}
+footer {
+    position: fixed;
+    z-index: 1000;
+    display: table;
+    background: #1b3649;
+    color: #fff;
+    width: 100%;
+	bottom: 0;
+    height: 35px;
+}
+.mainContent {
+    padding: 50px 0px 35px 0px;
+}
+
+footer .tabbutton {
+	text-align: center;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: #1b4669;
+	color: white;
+}
+
+footer .tabbutton-group {
+	padding-left: 0px;
+	padding-right: 0px;
+	margin-left: 1px;
+	margin-right: 0px;
+}
+
+footer .tabbutton.active {
+	color: white;
+	font-weight: 700;
+	background-color: #1b5679;
+}
+
+footer .tabbutton:not(.active):HOVER {
+	cursor: pointer;
+	text-decoration: underline;
+}

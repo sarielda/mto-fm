@@ -1,0 +1,71 @@
+<div>
+  <div id="item-tool" class="item-tool" [hidden]="!supportedItems || supportedItems.length === 0">
+    <div class="itemTypeSelection">
+      <table>
+        <tbody>
+          <tr>
+            <td colspan="3" style="padding-bottom:10px;"><label for="creationGroup">Mouse click action: </label></td>
+          <tr>
+            <td style="white-space:nowrap"><span><input type="radio" name="creationGroup" [(ngModel)]="creationMode" (ngModelChange)="onChangeMode()" value="none">Select</span></td>
+            <td style="white-space:nowrap"><span [hidden]="supportedItems.indexOf('event') < 0"><input type="radio" name="creationGroup" [(ngModel)]="creationMode" (ngModelChange)="onChangeMode()" value="event" [hidden]="supportedItems.indexOf('event') < 0">Create an event</span></td>
+            <td style="white-space:nowrap"><span [hidden]="supportedItems.indexOf('geofence') < 0"><input type="radio" name="creationGroup" [(ngModel)]="creationMode" (ngModelChange)="onChangeMode()" value="geofence">Create a boundary</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <hr>
+    <div [hidden]="creationMode!=='none'">
+      <div class="toolPageDescription">Select an item on a map to show details.</div>
+    </div>
+    <div [hidden]="creationMode!=='event'">
+      <div class="toolPageDescription">Click on a map to put a new event.</div>
+      <table class="toolPage">
+        <tbody>
+          <tr>
+            <td class="toolItemLabel">Type: </td>
+            <td class="toolItemValue">
+              <select size=8 [(ngModel)]="selectedEventType" name="selectedEventType" style="width:100%;max-width:240px;">
+                <option *ngFor="let eventType of eventTypes" [ngValue]="eventType">{{eventType.description||eventType.event_type}}</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td class="toolItemLabel">Direction: </td>
+            <td class="toolItemValue">
+              <select [(ngModel)]="eventDirection" name="eventDirection" style="width:100%;max-width:240px;">
+                <option *ngFor="let dir of eventDirections" [ngValue]="dir.value">{{dir.label}}</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div [hidden]="creationMode!=='geofence'">
+      <div class="toolPageDescription">Click the Add button to create a new boundary.</div>
+      <table class="toolPage">
+        <tbody>
+<!--
+          <tr class="toolItemRow">
+            <td class="toolItemLabel">Type: </td>
+            <td class="toolItemValue">
+              <select [(ngModel)]="geofenceType" name="geofenceType" style="width:100%;">
+                <option *ngFor="let type of geofenceTypes" [ngValue]="type.value">{{type.label}}</option>
+              </select>
+            </td>
+            <td></td>
+          </tr>
+-->          
+          <tr class="toolItemRow">
+            <td class="toolItemLabel">Direction: </td>
+            <td class="toolItemValue">
+              <select [(ngModel)]="geofenceDirection" name="geofenceDirection" style="width:100%;">
+                <option *ngFor="let dir of geofenceDirections" [ngValue]="dir.value">{{dir.label}}</option>
+              </select>
+            </td>
+            <td><button style="margin-left:10px;" (click)="onCreateGeofence()">Add</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

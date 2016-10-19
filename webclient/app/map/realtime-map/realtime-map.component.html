@@ -1,0 +1,10 @@
+<div>
+  <div id="carmonitor" class="carMonitorMap">
+    <div class="mapLocationBar primary" (dblclick)="switchDebug(); $event.preventDefault()">Location - {{region?.name}}</div>
+    <div id="carmonitorpop"></div>
+  </div>
+  <table id="legend"></table>
+  <div *ngIf="DEBUG">
+    Map extent: {{debugData}} <button (click)="debugOut()">Refresh</button>
+  </div>
+</div>

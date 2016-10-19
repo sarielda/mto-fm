@@ -1,0 +1,9 @@
+{
+  "port": 3123,
+  "files": "./**/*.{htm,html,css,js}",
+  "server": {
+    "baseDir": ".",
+    "routes": {"/webclient": "."}
+  },
+  "startPath": "/webclient"
+}

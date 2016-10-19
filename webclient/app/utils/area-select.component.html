@@ -1,0 +1,14 @@
+<div class="floatRight">
+	<label>Location: 
+		<select [(ngModel)]="selectedArea" (change)="onAreaChanged($event)">
+			<option *ngFor="let area of areas" [ngValue]="area">{{area.name}}</option>
+		</select>
+	</label>
+	<div *ngIf="DEBUG">
+		<label>Min Longitude <input [(value)]="min_lng" name="min_lng" (change)="onExtentInputChanged($event)"/></label>
+		<label>Min Latitude  <input [(value)]="min_lat" name="min_lat" (change)="onExtentInputChanged($event)"/></label><br>
+		<label>Max Longitude <input [(value)]="max_lng" name="max_lng" (change)="onExtentInputChanged($event)"/></label>
+		<label>Max Latitude  <input [(value)]="max_lat" name="max_lat" (change)="onExtentInputChanged($event)"/></label>
+		<button (click)="onClearArea()">Clear Area</button><br>
+	</div>
+</div>

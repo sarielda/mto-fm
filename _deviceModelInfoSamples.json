@@ -1,0 +1,59 @@
+{"templates":
+[
+  {
+    "makeModel": "Simulated Car",
+    "year": 2010,
+    "mileage": 80000,
+    "stars": 4,
+    "hourlyRate": 25,
+    "dailyRate": 60,
+    "thumbnailURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Isuzu_N-Series_%28Elf%29.jpg/280px-Isuzu_N-Series_%28Elf%29.jpg",
+    "type": "Truck",
+    "drive": "4WD"
+  },
+  {
+    "makeModel": "Simulated Car",
+    "year": 2009,
+    "mileage": 70000,
+    "stars": 3,
+    "hourlyRate": 30,
+    "dailyRate": 70,
+    "thumbnailURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/1995_Mazda_T3500_2-door_truck_%282009-06-07%29.jpg/264px-1995_Mazda_T3500_2-door_truck_%282009-06-07%29.jpg",
+    "type": "Truck",
+    "drive": "4WD"
+  },
+  {
+    "makeModel": "Simulated Car",
+    "year": 2008,
+    "mileage": 90000,
+    "stars": 5,
+    "hourlyRate": 40,
+    "dailyRate": 80,
+    "thumbnailURL": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Isuzu_F-Series_%282008%29.jpg/248px-Isuzu_F-Series_%282008%29.jpg",
+    "type": "Truck",
+    "drive": "4WD"
+  },
+  {
+    "makeModel": "Simulated Car",
+    "year": 2007,
+    "mileage": 95000,
+    "stars": 2,
+    "hourlyRate": 35,
+    "dailyRate": 75,
+    "thumbnailURL": "https://upload.wikimedia.org/wikipedia/commons/8/84/Forward2nd.jpg",
+    "type": "Truck",
+    "drive": "4WD"
+  },
+  {
+    "makeModel": "Simulated Car",
+    "year": 2007,
+    "mileage": 200000,
+    "stars": 1,
+    "hourlyRate": 20,
+    "dailyRate": 50,
+    "thumbnailURL": "https://upload.wikimedia.org/wikipedia/commons/f/f1/1stElf.jpg",
+    "type": "Truck",
+    "drive": "FR"
+  }
+]
+}

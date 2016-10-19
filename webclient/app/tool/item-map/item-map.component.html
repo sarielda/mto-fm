@@ -1,0 +1,12 @@
+<div>
+  <div id="item-map" class="carMonitorMap" style="height: 100%;">
+    <div class="itemTool primary" (click)="showTool=!showTool"><span [ngClass]="{'toolCollapsed': !showTool, 'toolExpanded': showTool }"></span>Tool</div>
+    <div class="itemToolContent" [hidden]="!showTool"><fmdash-item-tool></fmdash-item-tool></div>
+    <div class="mapLocationBar primary" (dblclick)="switchDebug(); $event.preventDefault()">Location - {{region?.name}}</div>
+    <div id="popover"></div>
+  </div>
+  <table id="legend"></table>
+  <div *ngIf="DEBUG">
+    Map extent: {{debugData}} <button (click)="debugOut()">Refresh</button>
+  </div>
+</div>

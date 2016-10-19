@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!------------------------------------------------------------------------------------------------
+   Copyright 2016 IBM Corp. All Rights Reserved.
+   
+   Licensed under the IBM License, a copy of which may be obtained at:
+   
+   http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+   
+   You may not use this file except in compliance with the license.
+-------------------------------------------------------------------------------------------------->
+<html>
+<head>
+    <title>Fleet Management Simulator</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel='stylesheet' href='css/sim/style.css' type='text/css' media='all' />
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.js"></script>
+    
+    <!-- UI-Router -->
+    <script src="https://angular-ui.github.io/ui-router/release/angular-ui-router.js"></script>
+    
+    <!-- OpenLayers -->
+    
+    <script type="text/javascript">
+        angular.element(document.getElementsByTagName('head')).append(angular.element('<base href="' + window.location.pathname + '" />'));
+        function onFrameLoaded() {}
+    </script>
+    
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flexibility/1.0.6/flexibility.js"></script>
+    <![endif]-->
+</head>
+<body ng-app="fleetManagementSimulator">
+    <header>
+        <div class="container noTopPadding">
+            <div class="floatLeft productTitle">
+                <a ui-sref="overview"><strong>IBM IoT for Automotive<span class="medium-hide"> - Fleet Management Starter Application</span></strong><span class="medium-hide"> - Simulator</span></a>
+            </div>
+            
+            <div class="floatRight">
+                <div class="userImg medium-hide">
+                    <img src="images/user.jpg" class="circularImg" />
+                </div>
+                
+                <p class="floatRight medium-hide" id="userName">
+                    Archie
+                </p>
+
+                <p class="floatRight medium-show large-hide" id="hamburger">
+                    <a href="#" class="em-Modal-Call" rel="loginModal">
+                        <i class="icon-menu"></i>
+                    </a>
+                </p>
+            </div>
+        </div>
+    </header>
+    
+    <div class="content" ng-controller="mainCtrl">
+        <aside class="sidebar">
+            <ul class="sidebarItems">
+                <li ng-repeat="vehicle in vehicles track by $index" ui-sref-active="active">
+                    <a ui-sref="{{vehicle.mo_id}}" ng-click="selectItem($index)"><span ng-class="{driving: vehicleStatus[vehicle.mo_id].driving}"></span>{{vehicle.serial_number}}</a>
+                </li>
+            </ul>
+        </aside>
+		<div class="container-50 noTopPadding mainContent row">
+			<div class="column-4-med" ui-view="vehicle"></div>
+			<div class="column-8-med" ng-repeat="vehicle in vehicles track by $index" ng-show="vehicle.display">
+				<iframe id="{{vehicle.mo_id}}" class="mapFrame" ng-src="{{vehicle.url}}" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" onload="onFrameLoaded()"></iframe>
+			</div>
+			<div class="column-12-med" ng-show="pageLoaded">
+				<div class="floatRight row">
+				<a class="btn" style="margin-left: 10px; margin-top: 5px;" ng-disabled="busy" ng-click="onStartAll()">{{requestingStarting ? "Starting..." : "Start All Vehicles"}}</a>
+				<a class="btn" style="margin-left: 10px; margin-top: 5px;" ng-disabled="busy" ng-click="onStopAll()">{{requestingStopping ? "Stopping..." : "Stop All Vehicles"}}</a>
+				</div>
+			</div>
+		</div>
+
+        <div class="em-Modal loadingModal" ng-class="{'em-Modal-show': !pageLoaded}">
+            <div class="em-Modal-Content alignCenter" ng-class="{'em-Modal-Content-show': !pageLoaded}">
+                <div class="em-Modal-Close">
+                    <a href="#">
+                        <i class="icon-close"></i>
+                    </a>
+                </div>
+                
+                <div class="loadingSpinner loadingSpinner-inner center"></div>
+                <div class="loadingSpinner loadingSpinner-outter center"></div>
+            </div>
+        </div>     
+	</div>
+
+<script src="js/simRouter.js"></script>

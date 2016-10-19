@@ -1,0 +1,6 @@
+/.bluemix/
+/.git/
+/.settings/
+/node_modules/
+/webclient/node_modules/
+/webclient/typings/

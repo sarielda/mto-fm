@@ -1,0 +1,92 @@
+/**
+ * Copyright 2016 IBM Corp. All Rights Reserved.
+ *
+ * Licensed under the IBM License, a copy of which may be obtained at:
+ *
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ *
+ * You may not use this file except in compliance with the license.
+ */
+.table > tbody > tr > td {
+  vertical-align: baseline;
+}
+
+.sortable:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.ascending_order {
+  margin-left: 10px;
+  position: relative;
+  top: 0px;
+  font-size:0;
+  border-bottom: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 10px solid #b0b0b0;
+}
+
+.descending_order {
+  margin-left: 10px;
+  position: relative;
+  bottom: 10px;
+  font-size:0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 10px solid #b0b0b0;
+}
+
+.none_order {
+  margin-left: 10px;
+  vertical-align: middle;
+  font-size:0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+.dropdown_base,
+.actionTD a {
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+
+.dropdown_base:hover {
+  color: blue;
+  border-top-color: blue;
+}
+
+.dropdown {
+  z-index:1000;
+  position: absolute;
+  background-color: #fdfdfd;
+  box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+  text-align:left;
+  border-width:1px;
+  border-color:black;
+}
+
+.dropdown_menu {
+  display: block;
+  padding: 2px 16px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown_menu_separator {
+  display: block;
+  width: 100%;
+  font-size: 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.dropdown_menu:hover {
+  text-decoration: underline;
+  color: blue;
+}
+
+.row label, .row select, .row input {
+  margin: 5px;
+  padding: 0px;
+}

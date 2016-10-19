@@ -1,0 +1,70 @@
+<div class="dashItem map-NumberOfCars primary" *ngIf="regionCounts$">
+
+  <span *ngFor="let counts of regionCounts$ | async">
+  <div class="row">
+    <div class="column-6-med column-6-xs alignRight map-Number">
+      <i class="icon-car iconMarginRight"></i>{{(counts.all >= 0) ? counts.all : '-'}}
+    </div>
+    <div class="column-6-med column-6-xs alignLeft map-Number-Side">
+      Cars in<br/>this area
+    </div>
+  </div>
+
+  <div class="divider-white"></div>
+
+  <div class="row noOffsetRow">
+    <div class="column-6-med column-6-xs alignCenter carStatsColumn">
+      <a [routerLink]="['/alert', {extent: region && region.extent || '', status: 'troubled'}]">
+        <i class="icon-car iconBlock orange"></i>
+        <strong>{{(counts.troubled >= 0) ? counts.troubled : '-'}}</strong>
+        <p>Troubled</p>
+      </a>
+    </div>
+
+    <div class="column-6-med column-6-xs alignCenter carStatsColumn">
+      <a [routerLink]="['/alert', {extent: region && region.extent || '', status: 'critical'}]">
+        <i class="icon-car iconBlock red"></i>
+        <strong>{{(counts.critical >= 0) ? counts.critical : '-'}}</strong>
+        <p>Critical</p>
+      </a>
+    </div>
+
+  </div>
+</span>
+</div><!-- end of Dash Item -->
+
+<div class="dashItem" *ngIf="regionsCounts$">
+  <div class="dashTitleBar">
+    <h3>Car availability (Zone)</h3>
+  </div>
+
+  <div class="primary">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Zone</th>
+          <th>Total</th>
+          <th>Troubled</th>
+          <th>Critical</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let counts of regionsCounts$ | async">
+          <td>{{counts?._region?.name}}</td>
+          <td class="align-right">{{(counts && counts?.all >= 0) ? counts?.all : '-'}}</td>
+          <td class="align-right">{{(counts && counts?.troubled >= 0) ? counts?.troubled : '-'}}</td>
+          <td class="align-right">{{(counts && counts?.critical >= 0) ? counts?.critical : '-'}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <!--
+    <div class="column-6-med" ng-repeat="zone in zones">
+      {{zone.name}}
+      <span class="floatRight">
+        <strong class="totalCarsNumber">{{zone.number}}</strong>
+        <strong ng-class="{cyan: zone.change === '遶奇ｿｽ', red: zone.change === '遶奇ｿｽ', blue: zone.change === '隨擾ｿｽ'}">{{zone.change}}</strong>
+      </span>
+    </div>
+    -->
+  </div>
+</div><!-- end of Dash Item -->

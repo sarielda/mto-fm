@@ -1,0 +1,25 @@
+<div class="container-50 noTopPadding container-30-right">
+	<div class="floatRight">
+		<button (click)="onCreateVehicle()">Create Vehicle</button>
+		<button (click)="onCreateVendor()">Manage Vendor</button>
+	</div>
+
+	<h4>VEHICLES</h4>
+</div>
+
+<div class="marginTop">
+	<vehicle-list></vehicle-list>
+</div>
+
+<!-- Vendor management dialog -->
+<div class="modal-overlay" [hidden]="!isWorkingWithVendor">
+	<div class="modal-overlay-contents">
+		<div class=modal-overlay-header>Vendor Management</div>
+		<div class=modal-overlay-body>
+			<vendor-list></vendor-list>
+		</div>
+		<div class="modal-overlay-buttons">
+			<button (click)="onClose()">Close</button>
+		</div>
+	</div>
+</div>

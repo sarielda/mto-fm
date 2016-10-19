@@ -1,0 +1,35 @@
+<div>
+	<span class="loading" [hidden]="!requestSending"><img src="/images/loading.gif"></span>
+	<div class="error" [hidden]="!errorMessage">{{errorMessage}}</div>
+	<div class="row">
+		<div class="alignCenter column-3-lg column-3-med column-3-sm">
+			<span class="row">Vendor List:</span>
+			<span class="row">
+				<select id="new_vendor" class="vendorList" size="10" [ngModel]="selectedVendor" (ngModelChange)="onSelectionChanged($event)">
+						<option *ngFor="let vendor of vendors" [value]="vendor.vendor">{{vendor.vendor}}</option>
+				</select>
+			</span>
+		</div>
+		<div class="column-7-lg column-7-med column-7-sm">
+			<div class="row">
+				<label for="vendor_name" class="fieldLabel column-2-lg column-2-med column-2-sm">Name:</label>
+				<input id="vendor_name" class="column-9-lg column-9-med column-9-sm" [(ngModel)]="formVendor.vendor">
+			</div>
+			<div class="row">
+				<label for="vendor_type" class="fieldLabel column-2-lg column-2-med column-2-sm">Type:</label>
+				<select id="vendor_type" class="column-9-lg column-9-med column-9-sm" [(ngModel)]="formVendor.type">
+					<option value="Manufacturer">Manufacturer</option>
+					<option value="Vendor">Vendor</option>
+					<option value="Caurier">Caurier</option>
+				</select>
+			</div>
+			<div class="row">
+				<span class="alignRight column-10-lg column-10-med column-10-sm">
+					<button (click)="onCreateVendor()" [disabled]="requestSending">Create</button>
+					<button (click)="onUpdateVendor(selectedVendor.vendor)" [disabled]="requestSending||!selectedVendor||selectedVendor.vendor==='IBM'">Update</button>
+					<button (click)="onDeleteVendor(selectedVendor.vendor)" [disabled]="requestSending||!selectedVendor||selectedVendor.vendor==='IBM'">Delete</button>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>

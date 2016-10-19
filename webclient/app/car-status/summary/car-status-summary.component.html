@@ -1,0 +1,30 @@
+<div class="noTopPadding">
+  <form class="alignRight">
+    <select [(ngModel)]="selectedRegion" #sel (change)="selectRegion(sel.value)" name="selectedRegion">
+      <option *ngFor="let region of regions" [ngValue]="region">{{region.name}}</option>
+    </select>
+  </form>
+</div>
+<div class="row noOffsetRow">
+  <div class="column-6-med">
+      <fmdash-chart-item
+          title="Fuel"
+          chartType="donut"
+          chartRotated="false"
+          aggrKey="fuel"
+          (selectionChange)="chartSelectionChanged($event)"></fmdash-chart-item>
+  </div>
+  <div class="column-6-med">
+      <fmdash-chart-item
+          title="Engine Oil Temperature"
+          chartType="donut"
+          chartRotated="false"
+          aggrKey="engineTemp"
+          (selectionChange)="chartSelectionChanged($event)"></fmdash-chart-item>
+  </div>
+</div>
+<div class="row marginTop-15">
+  <div class="column-12-med">
+    <fmdash-car-list groupProp="{{selectedGroupingProp}}" selectGroup="{{selectedGroupingLabel}}"></fmdash-car-list>
+  </div>
+</div>

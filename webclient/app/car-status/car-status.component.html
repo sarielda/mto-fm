@@ -1,0 +1,42 @@
+<div class="card marginTop primary">
+  <div class="cardOverlay" id="cardOverlay">
+      <p>Connection to database not successful</p>
+  </div>
+
+  <div class="floatRight">
+    <a [routerLink]="['/map', {vehicleId: probeData?.mo_id}]">Show in Map</a>
+  </div>
+  <h3>Vehicle ID: {{device?.vehicle?.serial_number || mo_id}}</h3>
+
+  <status-meter [minValue]="0" [maxValue]="100"
+    [value]="((probeData?.speed||0)/1.609344).toPrecision(3)" status=""
+    title="Speed" valueSuffix="" valueUnit="MPH" graphType="gauge">
+  </status-meter>
+  <status-meter [minValue]="0" [maxValue]="60"
+    [value]="probeData?.props?.fuel"
+    [status]="probeData?.info?.alerts?.fuelStatus"
+    title="Fuel Level" valueSuffix="/60" valueUnit="" graphType="gauge">
+  </status-meter>
+  <status-meter [minValue]="80" [maxValue]="300"
+    [value]="((probeData?.props?.engineTemp||0)*9/5+32).toPrecision(3)"
+    [status]="probeData?.info?.alerts?.engineTempStatus"
+    title="Engine Oil Temperature" valueSuffix="" valueUnit="Fahrenheit" graphType="temp-bar">
+  </status-meter>
+
+  <div class="row marginTop-15">
+    <div class="column-6-med">
+        <status-hist-graph [minValue]="0" [maxValue]="80" [interval]="5000" [historyCount]="20"
+          [value]="((probeData?.speed||0)/1.609344).toPrecision(3)"
+          [status]=""
+          title="Speed History" valueSuffix="" valueUnit="MPH">
+        </status-hist-graph>
+    </div>
+    <div class="column-6-med">
+        <status-hist-graph [minValue]="0" [maxValue]="60" [interval]="5000" [historyCount]="20"
+          [value]="probeData?.props?.fuel"
+          [status]="probeData?.info?.alerts?.fuelStatus"
+          title="Fuel Level History" valueSuffix="" valueUnit="">
+        </status-hist-graph>
+    </div>
+  </div>
+</div>

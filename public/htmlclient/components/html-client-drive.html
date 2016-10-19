@@ -1,0 +1,54 @@
+<div class="html-client-drive">
+	<h4>Define All Simulation Data: </h4>
+
+	<h5 class="marginTop-15">Vehicle Data</h5>
+	<select class="vehicleDataName" ng-model="vehicleDataName" ng-init="vehicleDataName = null"  ng-change="updateVehicleDataName()">
+		<option ng-repeat="rule in rules" value="{{rule.propName}}">{{rule.label}}</option>
+	</select>
+	<input size=8 ng-disabled="!vehicleDataName" placeholder="Value" ng-model="vehicleDataValue" class="vehicleDataValue" ng-change="updateVehicleDataValue()" />
+
+	<h5>Location</h5>
+	<div id="locationMap" class="locationMap">
+	 <button class="button mapConnect" ng-disabled="requestSending" ng-show="!connectOnStartup" ng-click="onCurrentLocation()">{{isConnected?"Disconnect":"Connect"}}</button>
+	 <button class="button mapCurrentLocation" ng-show="!traceCurrentLocation" ng-click="onCurrentLocation()">Current Location</button>
+	 <button class="button mapControlPanelButton" ng-show="false" ng-click="showControlPanel()">Control Panel</button>
+	 <div class="mapProbe" ng-show="driveEvent.trip_id">
+	 					Location=({{deviceLocation.lat}},{{deviceLocation.lng}})<br> 
+	 					Speed={{(driveEvent.speed/1.609344).toPrecision(3)}} MPH<br>
+	 					Fuel={{driveEvent.fuel}}<br>
+	 					Engine Temperature={{(driveEvent.engineTemp*9/5+32).toPrecision(3)}} F</div>
+	 <div id="controlPanel" class="controlPanel" ng-show="isControlPanelDisplayed">
+	 	Fuel: <input type="number" ng-model="fuel" ng-change="updateVehicleData()"><br>
+	 	Engine Temperature: <input type="number" ng-model="engineTemp" ng-change="updateVehicleData()">
+	 </div>
+  	 <div id="infopopup"></div>
+	</div>
+	<div id="console">{{console_message}}</div>
+	<div class="marginTop-15">
+		<div>
+			<span class="floatRight">
+				<a class="btn" ng-disabled="requestSending" ng-click="onDriving()">{{drivingButtonLabel}}</a>
+			</span>
+ 		</div>
+		<div>
+		 	<div class="marginTop-15"><strong>Mouse Click Action:</strong></div>
+			 	<div style="margin-top: 5px; margin-left: 10px;">
+			 		<span  style="white-space: nowrap">
+				 		<span style="white-space: nowrap; margin-right: 5px;"><input type="radio" name="actionGroup" ng-disabled="driveEvent.trip_id" ng-model="actionMode" value="action-car-position" id="start"><label for="start">Set start position</label></span>
+			 		  	<select style="margin-right: 10px;" ng-model="srcDirection" ng-options="dir.value as dir.label for dir in directions" ng-change="onChangeSrcDirection()" ng-disabled="driveEvent.trip_id"></select>
+			 		</span>
+			 		<span  style="white-space: nowrap">
+				 		<span style="white-space: nowrap; margin-right: 5px;"><input type="radio" name="actionGroup" ng-disabled="driveEvent.trip_id" ng-model="actionMode" value="action-route" id="destination"><label for="destination">Set end position</label></span>
+			 		  	<select style="margin-right: 10px;" ng-model="dstDirection" ng-options="dir.value as dir.label for dir in directions" ng-change="onChangeDstDirection()" ng-disabled="driveEvent.trip_id">></select>
+			 		</span>
+			 	</div>	
+	 		</div>
+		 	<div class="marginTop-15"><strong>Route Option:</strong></div>
+			 	<div style="margin-top: 5px; margin-left: 10px;">
+			 		<span style="white-space: nowrap; margin-right: 10px;"><input type="checkbox" ng-disabled="driveEvent.trip_id" ng-model="opt_avoid_events" ng-change="onAvoidEventChange()" id="avoid"><label for="avoid">Avoid events</label></span>
+			 		<span style="white-space: nowrap"><input type="checkbox" ng-disabled="driveEvent.trip_id" ng-model="opt_route_loop" ng-change="onRouteLoop()" id="loop"><label for="loop">Loop between start and end positions</label></span>
+			 	</div>	
+	 		</div>
+ 		</div>
+	</div>
+</div>
