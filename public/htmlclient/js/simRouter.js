@@ -142,10 +142,14 @@ angular.module('fleetManagementSimulator', ['ui.router', 'ngAnimate'])
 			}, 1000);
 		};
 		
+		var oldDate = (new Date(0)).toUTCString(); // to avoid IE cache issue
 		// Get simulation vehicles
 		$http({
 			method: "GET",
-			url: "/user/simulatedVehicles"
+			url: "/user/simulatedVehicles",
+			headers: {
+				"If-Modified-Since": oldDate
+			}
 		}).success(function(data, status){					
 			var vehicles = data.data || []; 
 			if(vehicles.length > 5){
@@ -156,7 +160,10 @@ angular.module('fleetManagementSimulator', ['ui.router', 'ngAnimate'])
 			});
 			$http({
 				method: "GET",
-				url: "/user/simulatedDriver"
+				url: "/user/simulatedDriver",
+				headers: {
+					"If-Modified-Since": oldDate
+				}
 			}).success(function(drivers, status){
 				var loc = $location.search()["loc"];
 				vehicles.forEach(function(vehicle, i){

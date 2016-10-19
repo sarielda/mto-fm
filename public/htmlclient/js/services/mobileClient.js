@@ -33,6 +33,9 @@ angular.module('htmlClient')
 		makeRequestOption: function(request) {
 			if (!request.headers)
 				request.headers = {};
+			if (request.method && request.method.toLowerCase() === "get")	 {
+				request.headers["If-Modified-Since"] = (new Date(0)).toUTCString(); // to avoid IE cache issue
+			}
 			request.headers["iota-starter-uuid"] = this.getMobileDeviceId();
 			if (!request.dataType)
 				request.dataType = "json";

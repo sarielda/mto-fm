@@ -165,7 +165,7 @@ router.get("/simulatedVehicles", authenticate, function(req, res){
 			debug("Create a vendor for simulator");
 			Q.when(driverInsightsAsset.addVendor({"vendor": VENDOR_NAME, "type": "Vendor", "status":"Active"}), function(response){
 				debug("A vendor for simulator is created");
-				_createSimulatedVehicles(res);
+				_getAvailableVehicles(res);
 			})["catch"](function(err){
 				_sendError(res, err);
 			}).done();
