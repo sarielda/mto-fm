@@ -21,6 +21,7 @@ import * as _ from 'underscore';
   moduleId: module.id,
   selector: 'fmdash-map-page',
   templateUrl: 'map-page.component.html',
+  styleUrls: ['map-page.component.css'],
   providers: [],
 })
 export class MapPageComponent implements OnInit, AfterViewInit {
@@ -28,6 +29,8 @@ export class MapPageComponent implements OnInit, AfterViewInit {
   regions: MapArea[];
   selectedArea: MapArea;
   mapLastSelectedArea: MapArea;
+  showGuide: boolean = true;
+  initialized: boolean = false;
 
   private initialVehicleId: string;
   @ViewChild(RealtimeMapComponent) realtimeMap: RealtimeMapComponent;
@@ -54,7 +57,7 @@ export class MapPageComponent implements OnInit, AfterViewInit {
     this.mapLastSelectedArea = _.extend({}, this.locationService.getMapRegion()); // fire extent change
   }
 
-  get htmlClientInitialLocation(){
+  htmlClientInitialLocation(){
     let mapRegion = this.locationService.getMapRegion();
     let e = mapRegion && mapRegion.extent;
     if(e){
@@ -65,7 +68,9 @@ export class MapPageComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    // get param from router
+    this.checkGuidance();
+
+   // get param from router
     this.route.params.forEach((params: Params) => {
       let id = params['vehicleId'];
       if(id) this.initialVehicleId = id;
@@ -91,8 +96,31 @@ export class MapPageComponent implements OnInit, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    if(this.initialVehicleId){
+     this.initialized = true;
+     if(this.initialVehicleId){
       this.realtimeMap.selectDevice(this.initialVehicleId);
     }
   }
+  openSimulator() {
+    this.showGuide = false;
+    let simulatorUrl = this.webApiBaseUrl + "/htmlclient/fleet.html?loc=" + this.htmlClientInitialLocation();
+    window.open(simulatorUrl, 'htmlclient');
+  }
+  checkGuidance() {
+    if (window.navigator.cookieEnabled) {
+      let found = false;
+      let hide_guide_key = "iota-fleetmanagement-hide-guide";
+      if (document.cookie) {
+        let cookies = document.cookie.split("; ");
+        found = _.contains(_.map(cookies, function(cookie) {
+		      return cookie.split("=")[0];
+        }), hide_guide_key);
+        this.showGuide = !found;
+      }
+      if (!found) {
+        document.cookie = hide_guide_key + "=true";
+      }
+    }
+  }
 }
+ 

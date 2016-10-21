@@ -5,7 +5,8 @@
       </select>
     </form>
     <span class="floatRight">
-      <a href="{{webApiBaseUrl}}/htmlclient/fleet.html?loc={{htmlClientInitialLocation}}" target="htmlclient">Simulate Vehicle Data&nbsp;</a>
+      <a class="simulator_link" href="javascript:void(0);" (click)="openSimulator()">Simulate Vehicle Data&nbsp;</a>
+      <span *ngIf="showGuide" class="simulator_link_guide" [ngClass]="{active: initialized}" (click)="showGuide=false">Click here and start vehicles in the simulator to try with simulated data.</span>
     </span>
 
   <h4>MAP OF ALL CARS</h4>

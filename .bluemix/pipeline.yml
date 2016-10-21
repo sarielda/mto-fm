@@ -1,4 +1,4 @@
- ---
+---
 stages:
 - name: Build Stage
   inputs:
@@ -9,7 +9,7 @@ stages:
   jobs:
   - name: Build
     type: builder
-    build_type: npm
+    build_type: shell
     script: |-
       #!/bin/bash
       # The default Node.js version is 0.10.40
@@ -23,7 +23,7 @@ stages:
         pushd .
         cd ./webclient
         echo "-- Installing dependencies..."
-        npm install
+        npm install || echo npm-debug.log
         echo "-- Compiling typescript..."
         npm run tsc
         npm run gulp
@@ -52,18 +52,18 @@ stages:
       #!/bin/bash
       
       if [ ! -f _generate_deploy_files.sh ]; then
-        echo "The _generate_deploy_files.sh is missing. Exiting.."
-        exit 1
+        echo "The _generate_deploy_files.sh is missing. Using the default..."
+      else
+        echo "Generating deployment files for suffix '$SUFFIX'"
+        chmod +x _generate_deploy_files.sh
+        ./_generate_deploy_files.sh $SUFFIX || exit 1
+        echo "Generated _deploy_create_services.sh"
+        cat _deploy_create_services.sh
+        echo "--"
+        echo "Generated manifest.yml"
+        cat manifest.yml
+        echo "--"
       fi
-      echo "Generating deployment files for suffix '$SUFFIX'"
-      chmod +x _generate_deploy_files.sh
-      ./_generate_deploy_files.sh $SUFFIX || exit 1
-      echo "Generated _deploy_create_services.sh"
-      cat _deploy_create_services.sh
-      echo "--"
-      echo "Generated manifest.yml"
-      cat manifest.yml
-      echo "--"
       if [[ $CF_TARGET_URL == *".stage1."* ]]; then
         echo "*** Patching manifest.yml to remove IoT4A service in stage1 ***"
         sed -i.bak '/- FleetIoTForAuto/d' ./manifest.yml

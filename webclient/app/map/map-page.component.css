@@ -1,0 +1,36 @@
+.simulator_link_guide {
+    cursor: pointer;
+    position: absolute; 
+    float: right;
+    color: #fff;
+    font-size: large;
+    background-color: rgb(243,118,54);
+    width: 320px;
+    top: 120px;
+    right: -480px;
+    padding: 15px;
+    border-radius: 5px;
+    z-index:1000;
+	  transition:2s;
+    transition-property: right;
+    transition-timing-function: ease;
+}
+.simulator_link_guide.active {
+    right: 80px;
+}
+.simulator_link_guide.active:before{
+    cursor: pointer;
+    content:''; 
+    position:absolute; 
+    width:0; 
+    height:0; 
+    top:-15px; 
+    left:10%;
+    border:13px transparent solid; 
+    border-right-width:0; 
+    border-left-color:rgb(243,118,54); 
+    transform:rotate(270deg); 
+    -webkit-transform:rotate(270deg);
+    -o-transform:rotate(270deg);
+    z-index:1000;
+}
