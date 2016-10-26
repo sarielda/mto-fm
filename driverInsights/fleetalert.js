@@ -454,6 +454,12 @@ _.extend(driverInsightsAlert, {
 							alertsForVehicle[alert.source && alert.source.id] = alert; // Update as valid alert
 							this.alertsToInsert["invalid"][alertToInsert._id] = alertToInsert;
 						}
+					}else{
+						if(alert.closed_ts >= 0){
+							this.alertsToInsert["invalid"] = this.alertsToInsert["invalid"] || {};
+							this.alertsToInsert["invalid"][alert._id] = alert;
+						}
+						// alertToInsert doesn't need to add in the update queue (this.alertsToInsert) because it has already been in the queue
 					}
 				}
 			}else{

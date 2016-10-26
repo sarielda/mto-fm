@@ -231,6 +231,7 @@ var initWebSocketServer = function(server, path){
 						 max_latitude:  90, max_longitude:  180 };
 			}
 			return getCarProbe(getQs(), true).then(function(probes){
+				probes = probes || [];
 				// construct message
 				var msgs = JSON.stringify({
 					count: (probes.length),

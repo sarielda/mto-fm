@@ -99,9 +99,9 @@ export class RealtimeMapComponent implements OnInit {
 		this.appConfig.DEBUG = !this.appConfig.DEBUG;
 	}
 	debugOut(){
-		var extent = this.map.getView().calculateExtent(this.map.getSize());
-		extent = ol.proj.transformExtent(extent, 'EPSG:3857', 'EPSG:4326');
-		var center = ol.proj.toLonLat(this.map.getView().getCenter(), 'EPSG:3857');
+		let ext = this.map.getView().calculateExtent(this.map.getSize());
+		let extent = this.mapHelper.normalizeExtent(ol.proj.transformExtent(ext, 'EPSG:3857', 'EPSG:4326'));
+		let center = this.mapHelper.normalizeLocation(ol.proj.toLonLat(this.map.getView().getCenter(), 'EPSG:3857'));
 		this.debugData = "" + JSON.stringify(extent) + ", Center:" + JSON.stringify(center);
 	}
 	initMap(){

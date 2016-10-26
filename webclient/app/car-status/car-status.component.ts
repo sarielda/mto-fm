@@ -42,10 +42,9 @@ export class CarStatusComponent implements OnInit {
   ngOnInit() {
     var self = this;
     this.proveDataSubscription = this.moIdSubject.switchMap(mo_id => {
-        // in case the mo_id is not tracked, configure the service to track it
-        if(!this.realtimeDataProviderService.getProvider().getDevice(mo_id)){
-          this.realtimeDataProviderService.startTracking(mo_id);
-        }
+        // Start watching car probe of the vehicle. This method will monitor the car probe of the vehicle from whole world. 
+        // It may result slow performance of querying car probe as the searching area is too large.
+        this.realtimeDataProviderService.startTracking(mo_id);
         return mo_id ? this.carStatusDataService.getProbe(mo_id) : Observable.of([]);
       }).subscribe(probe => {
         // update data

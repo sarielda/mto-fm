@@ -75,10 +75,34 @@ export abstract class MapItemHelper<T extends Item> {
       return;
     }
     let ext = this.map.getView().calculateExtent(size);
-    let extent = ol.proj.transformExtent(ext, "EPSG:3857", "EPSG:4326");
+    let extent = this.normalizeExtent(ol.proj.transformExtent(ext, "EPSG:3857", "EPSG:4326"));
     this.queryItems(extent[0], extent[1], extent[2], extent[3]).subscribe(data => {
       this.updateItems(data);
     });
+  }
+
+  normalizeExtent(extent: number[]) {
+    let loc1 = this.normalizeLocation([extent[0], extent[1]]);
+    let loc2 = this.normalizeLocation([extent[2], extent[3]]);
+    extent[0] = loc1[0];
+    extent[1] = loc1[1];
+    extent[2] = loc2[0];
+    extent[3] = loc2[1];
+    return extent;
+  }
+
+  normalizeLocation(loc: number[]) {
+      let lng = loc[0] % 360;
+      if (lng < -180) lng += 360;
+      else if (lng > 180) lng -= 360;
+
+      let lat = loc[1] % 180;
+      if (lat < -90) lat += 180;
+      else if (lat > 90) lat -= 180;
+
+      loc[0] = lng;
+      loc[1] = lat;
+      return loc;
   }
 
   /*

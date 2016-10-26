@@ -117,7 +117,7 @@ export class ItemMapComponent implements OnInit {
     });
 
     this.map.on("click", function(e) {
-      let coordinate = ol.proj.toLonLat(e.coordinate, undefined);
+      let coordinate = this.mapHelper.normalizeLocation(ol.proj.toLonLat(e.coordinate, undefined));
       let loc = {longitude: coordinate[0], latitude: coordinate[1]};
       this.commandExecutor.locationClicked(loc);
     }.bind(this));
@@ -255,7 +255,8 @@ export class ItemMapComponent implements OnInit {
       return;
     }
 
-    let extent = ol.proj.transformExtent(this.map.getView().calculateExtent(size), "EPSG:3857", "EPSG:4326");
+    let extent:number[] = ol.proj.transformExtent(this.map.getView().calculateExtent(size), "EPSG:3857", "EPSG:4326");
+    extent = this.mapHelper.normalizeExtent(extent);
     return {
       min_longitude: extent[0],
       min_latitude: extent[1],
