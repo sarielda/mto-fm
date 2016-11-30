@@ -290,10 +290,18 @@ export class RealtimeMapComponent implements OnInit {
 					result.content += content;
 				}
 				if(sample){
+					let fuelText = "";
+					if (sample.props) {
+						if (sample.props.fuelLevel) {
+							fuelText = String(sample.props.fuelLevel) + "%";
+						} else if (sample.props.fuel) {
+							fuelText = String(sample.props.fuel);
+						}
+					}
 					result.content += '<div style="white-space: nowrap;">Longitude: ' + _.escape(sample.lng) + "</div>";
 					result.content += '<div style="white-space: nowrap;">Latitude: ' + _.escape(sample.lat) + "</div>";
 					result.content += '<div style="white-space: nowrap;">Speed: ' + _.escape(String(Math.round(Number(sample.speed)/0.01609344)/100)) + "</div>";
-					result.content += '<div style="white-space: nowrap;">Fuel: ' + _.escape(sample.props && sample.props.fuel) + "</div>";
+					result.content += '<div style="white-space: nowrap;">Fuel: ' + _.escape(fuelText) + "</div>";
 					result.content += '<div style="white-space: nowrap;">Engine Oil Temperature: ' + _.escape(String(Math.round((Number(sample.props && sample.props.engineTemp)*9/5+32)*100)/100)) + "</div>";
 					result.content += '<div style="white-space: nowrap;">Timestamp: ' + _.escape(sample.timestamp) + "</div>";
 				}

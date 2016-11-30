@@ -27,10 +27,23 @@ export class VehiclePageComponent implements OnInit {
   private vendorList: VendorListComponent;
 
   isWorkingWithVendor: boolean;
+  isIoTPAvailable: boolean = false;
 
-  constructor() {}
+  constructor(public http:Http) {
 
-  ngOnInit() {}
+  }
+
+  ngOnInit() {
+    this.http.get("/user/capability/device")
+    .subscribe((response: any) => {
+      let res = response.json();
+      this.isIoTPAvailable = res.available;
+    });
+  }
+
+  onSyncWithIoTPlatform() {
+    this.vehicleList.onSyncWithIoTPlatform();
+  }
 
   onCreateVehicle() {
     this.vehicleList.onCreate();

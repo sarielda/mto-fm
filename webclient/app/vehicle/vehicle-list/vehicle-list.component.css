@@ -39,3 +39,7 @@
   text-align: right;
   font-size: 18px;
 }
+
+.statusCircle {
+  cursor: pointer;
+}

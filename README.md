@@ -21,19 +21,19 @@ The Fleet Management Starter Application uses the following services that are av
 
 ## Deploying the app on Bluemix
 
-You can automatically deploy an instance of the Fleet Management Starter Application on Bluemix by clicking [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ibm-watson-iot/iota-starter-server-fm.git). You can also deploy the app manually. 
+You can automatically deploy an instance of the Fleet Management Starter Application on Bluemix by clicking [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ibm-watson-iot/iota-starter-server-fm.git). You can also deploy the app manually.
 
 To manually deploy your own instance of the Fleet Management Starter Application on Bluemix, complete all of the following steps:
 
 1. [Register][bluemix_signup_url] an account on Bluemix or use an existing valid account.
-2. Download and install the [Cloud-foundry CLI][cloud_foundry_url] tool. 
+2. Download and install the [Cloud-foundry CLI][cloud_foundry_url] tool.
 3. Clone the Fleet Management Starter Application to your local environment by using the following console command:  
 
    ```  
    git clone https://github.com/ibm-watson-iot/iota-starter-server-fm.git  
    ```  
-   
-4. Change to the directory that you created. 
+
+4. Change to the directory that you created.
 5. Edit the `manifest.yml` file and change the values of `<name>` and `<host>` to something unique.
 
   ```
@@ -48,39 +48,39 @@ To manually deploy your own instance of the Fleet Management Starter Application
    ```
    The host value is used to generate your application URL, which is in the following syntax:  
    `<host>.mybluemix.net`.
-   
+
 6. Install the NPM package by using the following command. The installer observes the dependencies that are specified in your `package.json` file.
    ```
   $ cd ./webclient
-  $ npm install 
+  $ npm install
    ```
-7. Convert TypeScript to JavaScript: 
+7. Convert TypeScript to JavaScript:
 
    ```
    $ npm run tsc
    $ npm run gulp
    $ cd ..
    ```
-   
+
 8. By using the command line tool, connect to Bluemix and log in when prompted:
 
   ```
   $ cf api https://api.ng.bluemix.net
   $ cf login
   ```
-  
+
 9. Create an instance of the IBM IoT for Automotive service in Bluemix:
 
   ```
   $ cf create-service iotforautomotive free_shared FleetIoTForAuto
   ```
-  
+
 10. Create an instance of the Cloudant NoSQL DB service in Bluemix:
 
   ```
   $ cf create-service cloudantNoSQLDB Lite FleetCloudantDB
   ```
-  
+
 11. Push the starter app to Bluemix by using the following command. Because you will need to perform more steps when the app is deployed, you must add the option `--no-start` when you run the `push` command.
 
   ```
@@ -120,6 +120,58 @@ starter | Starter4Iot
 - To start the Fleet Management Starter Application, open the [Bluemix dashboard][bluemix_dashboard_url] and start the app.
 
 Congratulations! You are now ready to use your own instance of the IBM IoT for Automotive - Fleet Management Starter Application. Open `http://<host>.mybluemix.net` in your browser.
+
+## (Optional) Connecting to an OBDII dongle plugged in to your car
+
+The starter app provides a mobile app to connect to an OBDII dongle plugged in to your car. The mobile app sends data from an OBDII dongle to the Fleet Management Starter Application via IoT Platform service and you can see the data in the app. Follow the steps below to enable this optional feature.
+
+### Bind the IoT Platform service to the app
+
+1. Open the [Bluemix dashboard][bluemix_dashboard_url] in your browser.
+
+1. Open the IBM IoT for Automotive service.
+
+1. Select **Connections** tab at the left navigation bar.
+
+1. Click **Connect New**
+
+1. Select *Internet of Things Platform* service and click *Create* to bind the service
+
+### Create a device type for your device
+
+When you start a mobile app for the first time, your device is registered to the IoT Platform service automatically with a device type __OBDII__. The device type needs to be prepared beforehand.   
+
+1. Launch the IoT Platform dashboard on Bluemix.
+
+1. Open **Device** page
+
+1. Open **Device Types** tab at top of the page
+
+1. Click **+Create Type**
+
+1. Click **Create device type**
+
+1. Input 'OBDII' in **Name** field
+
+1. Leave the other fields as default and click **Next** at the bottom right until a device type is created.
+
+### Set up the OBDII Fleet Management App
+
+Refer [IBM IoT for Automotive - OBDII Fleet Management App for Android](https://github.com/ibm-watson-iot/iota-starter-obd-android) to build and install a mobile app to your Android phone. Once you get ready to use it, start the mobile app on your phone.
+
+### Connect the device to the IoT for Automotive service
+
+When you start the mobile app for the first time, a device is registered automatically to the IoT Platform service that you have specified in the mobile app, and corresponding vehicle is created automatically when you connect your device to the IoT Platform. Now, your device is connected to the Fleet Management Starter Application. Go to **Map** or **Car Status** page in the app and see the status.
+
+If you no longer need a device, go to IoT Platform dashboard and delete your device manually. Then, after you delete it, update vehicles in the IBM IoT for Automotive service as follows.
+
+1. Open the Fleet Management Starter Application on your browser.
+
+1. Select **Vehicle** tab at the left navigation bar.
+
+1. Click **Sync with IoT Platform** at top right of the page.
+
+A vehicle corresponding to deleted device must be removed from a table. Also, if you have added new device to IoT Platform manually, new vehicle is added to the table. 
 
 ## Reporting defects
 To report a defect with the IoT for Automotive - Mobility Starter Application mobile app, go to the [Issues section](https://github.com/ibm-watson-iot/iota-starter-server-fm/issues) section.

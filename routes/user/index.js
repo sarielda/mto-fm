@@ -18,6 +18,7 @@
  * Export routers
  */
 module.exports = [
+                  require('./iotpdevice.js'),
                   require('./insights.js'),
                   require('./simulator.js'),
                   require('./asset.js'),

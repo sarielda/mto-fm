@@ -90,6 +90,10 @@ export class VehicleListComponent {
       this.isWorkingWithVehicle = true;
     }, (error: any) => {
         this.requestSending = false;
+        if (error.status === 404) { // No vendor is registered
+          this.workingVehicle = new Vehicle({});
+          this.isWorkingWithVehicle = true;
+        }
     });
   }
 
@@ -106,6 +110,10 @@ export class VehicleListComponent {
       this.isWorkingWithVehicle = true;
     }, (error: any) => {
         this.requestSending = false;
+        if (error.status === 404) { // No vendor is registered
+          this.workingVehicle = new Vehicle(this._getVehicle(mo_id));
+          this.isWorkingWithVehicle = true;
+        }
     });
   }
 
@@ -127,6 +135,35 @@ export class VehicleListComponent {
   // Delete given vehicle
   onDelete(mo_id: string) {
     this._deleteVehilce(mo_id);
+  }
+
+  onToggleStatus(mo_id: string) {
+      let vehicle = new Vehicle(this._getVehicle(mo_id));
+      if (vehicle.status === "active") {
+        vehicle.status = "inactive";
+      } else {
+        vehicle.status = "active";
+      }
+      this._updateVehicle(mo_id, vehicle);
+  }
+
+  onSyncWithIoTPlatform() {
+    let isRequestOwner = !this.requestSending;
+    this.requestSending = true;
+    this.errorMessage = null;
+    this.http.post("/user/device/sync", null, null)
+    .subscribe((response: Response) => {
+      // Update vehicle list when succeeded
+      this._updateVehicleList(1);
+      if (isRequestOwner) {
+        this.requestSending = false;
+      }
+    }, (error: any) => {
+      this.errorMessage = error.message || error._body || error;
+      if (isRequestOwner) {
+        this.requestSending = false;
+      }
+    });
   }
 
   private _updateVehicleList(pageNumber: number) {

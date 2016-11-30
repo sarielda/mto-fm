@@ -13,7 +13,7 @@
     title="Speed" valueSuffix="" valueUnit="MPH" graphType="gauge">
   </status-meter>
   <status-meter [minValue]="0" [maxValue]="60"
-    [value]="probeData?.props?.fuel"
+    [value]="probeData?.props?.fuelLevel ? probeData?.props?.fuelLevel * 60 / 100 : probeData?.props?.fuel"
     [status]="probeData?.info?.alerts?.fuelStatus"
     title="Fuel Level" valueSuffix="/60" valueUnit="" graphType="gauge">
   </status-meter>
@@ -33,7 +33,7 @@
     </div>
     <div class="column-6-med">
         <status-hist-graph [minValue]="0" [maxValue]="60" [interval]="5000" [historyCount]="20"
-          [value]="probeData?.props?.fuel"
+          [value]="probeData?.props?.fuelLevel ? probeData?.props?.fuelLevel * 60 / 100 : probeData?.props?.fuel"
           [status]="probeData?.info?.alerts?.fuelStatus"
           title="Fuel Level History" valueSuffix="" valueUnit="">
         </status-hist-graph>

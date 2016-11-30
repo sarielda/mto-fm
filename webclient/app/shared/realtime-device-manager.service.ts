@@ -38,6 +38,7 @@ export class RealtimeDeviceDataProviderService {
 	activeWsClient = null;
 	activeWsSubscribe = null; // WebSocket client
 	carStatusIntervalTimer: any;
+	wsRetryCount:number = 0;
 
   constructor(
     private $http: HttpClient,
@@ -110,6 +111,7 @@ export class RealtimeDeviceDataProviderService {
 			}
 
 			// start websock server for real-time tracking
+			this.wsRetryCount = 0;
 			this.stopWsClient();
 			if (data.wssPath){
 				var startWssClient = () => {
@@ -122,13 +124,18 @@ export class RealtimeDeviceDataProviderService {
 						if(this.appConfig.DEBUG){
 							console.log('DEBUG-MAP: got devices data from WS: n=' + data.devices.length);
 						}
+						this.wsRetryCount = 0; // connected
 					}, (e) => {
-						if (e.type === 'close'){
+						if (e.type === 'close' || this.wsRetryCount++ < 3){
 							this.activeWsSubscribe = null;
 							ws.socket.close(); //closeObserver(); observer.dispose();
 							// handle close event
 							if(ws === this.activeWsClient){ // reconnect only when this ws is active ws
-								console.log('DEBUG-MAP: got wss socket close event. reopening...')
+								if (e.type === 'close') {
+									console.log('DEBUG-MAP: got wss socket close event. reopening...');
+								} else {
+									console.log('DEBUG-MAP: got unexpected connection error. reopening... (' + this.wsRetryCount + ')');
+								}
 								this.activeWsClient = null;
 								startWssClient(); // restart!
 								return;

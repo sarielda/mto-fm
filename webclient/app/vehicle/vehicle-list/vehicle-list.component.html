@@ -52,8 +52,8 @@
 				<td>{{vehicle.model||'-'}}</td>
 				<td>
 					<div class="radarCircles">
-						<span [attr.aria-label]="vehicle.status === 'active' ? 'active' : 'inactive'" class="statusCircle" [ngClass]="vehicle.status === 'active' ? 'greenStatus' : 'redStatus'"></span>
-						<span [attr.aria-label]="vehicle.status === 'active' ? 'active' : 'inactive'" class="statusCircle" [ngClass]="vehicle.status === 'active' ? 'greenStatus greenStatusZoom' : ''"></span>
+						<span [attr.aria-label]="vehicle.status === 'active' ? 'active' : 'inactive'" class="statusCircle" [ngClass]="vehicle.status === 'active' ? 'greenStatus' : 'redStatus'" (click)="onToggleStatus(vehicle.mo_id)"></span>
+						<span [attr.aria-label]="vehicle.status === 'active' ? 'active' : 'inactive'" class="statusCircle" [ngClass]="vehicle.status === 'active' ? 'greenStatus greenStatusZoom' : ''" (click)="onToggleStatus(vehicle.mo_id)"></span>
 					</div>
 				</td>
 				<td class="alignCenter actionTD">

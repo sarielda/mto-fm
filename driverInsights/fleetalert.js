@@ -70,37 +70,30 @@ _.extend(driverInsightsAlert, {
 		this.registerAlertRule("low_fuel", {
 			fireRule: function(probe, vehicle){
 				var alerts = [];
-				if(vehicle && vehicle.vehicleInfo && vehicle.vehicleInfo.properties && vehicle.vehicleInfo.properties.fuelTank
-				&& probe && probe.props && probe.props.fuel){
-					var fuelTank = vehicle.vehicleInfo.properties.fuelTank;
-					var prevFuel = vehicle.prevProbe && vehicle.prevProbe.props && vehicle.prevProbe.props.fuel;
-					var fuel = probe.props.fuel;
-					if((!prevFuel || prevFuel/fuelTank >= 0.1) && fuel/fuelTank < 0.1){
-						var alert = {
-								source: {type: "script", id: "low_fuel"},
-								type: "low_fuel",
-								description: "Fuel at 1/10 tank",
-								severity: "High",
-								mo_id: probe.mo_id,
-								ts: probe.ts,
-								latitude: probe.matched_latitude || probe.latitude,
-								longitude: probe.matched_longitude || probe.longitude,
-								simulated: VEHICLE_VENDOR_IBM === vehicle.vehicleInfo.vendor
-							};
-						alerts.push(alert);
-					}
+				var fuelLevel = self._getFuelLevel(probe, vehicle);
+				var prevFuelLevel = self._getFuelLevel(vehicle.prevProbe, vehicle);
+				// low fuel : lower than 10% of fuel tank
+				if((0 > prevFuelLevel || prevFuelLevel >= 0.1) && (0 <= fuelLevel && fuelLevel < 0.1)){
+					var alert = {
+							source: {type: "script", id: "low_fuel"},
+							type: "low_fuel",
+							description: "Fuel at 1/10 tank",
+							severity: "High",
+							mo_id: probe.mo_id,
+							ts: probe.ts,
+							latitude: probe.matched_latitude || probe.latitude,
+							longitude: probe.matched_longitude || probe.longitude,
+							simulated: VEHICLE_VENDOR_IBM === vehicle.vehicleInfo.vendor
+						};
+					alerts.push(alert);
 				}
 				return alerts;
 			},
 			closeRule: function(alert, probe, vehicle){
-				if(vehicle && vehicle.vehicleInfo && vehicle.vehicleInfo.properties && vehicle.vehicleInfo.properties.fuelTank
-				&& probe && probe.props && probe.props.fuel){
-					var fuelTank = vehicle.vehicleInfo.properties.fuelTank;
-					var fuel = probe.props.fuel;
-					if(fuel/fuelTank >= 0.1){
-						alert.closed_ts = probe.ts;
-						return alert;
-					}
+				var fuelLevel = self._getFuelLevel(probe, vehicle);
+				if(fuelLevel >= 0.1){
+					alert.closed_ts = probe.ts;
+					return alert;
 				}
 			}
 		});
@@ -109,40 +102,30 @@ _.extend(driverInsightsAlert, {
 		this.registerAlertRule("half_fuel", {
 			fireRule: function(probe, vehicle){
 				var alerts = [];
-				if(vehicle && vehicle.vehicleInfo && vehicle.vehicleInfo.properties && vehicle.vehicleInfo.properties.fuelTank
-				&& probe && probe.props && probe.props.fuel){
-					var fuelTank = vehicle.vehicleInfo.properties.fuelTank;
-					var prevFuel = vehicle.prevProbe && vehicle.prevProbe.props && vehicle.prevProbe.props.fuel;
-					var fuel = probe.props.fuel;
-					var prevFuelRatio = prevFuel/fuelTank;
-					var fuelRatio = fuel/fuelTank;
-					if((!prevFuelRatio || prevFuelRatio < 0.1 || 0.5 <= prevFuelRatio) && (0.1 <= fuelRatio && fuelRatio < 0.5)){
-						var alert = {
-								source: {type: "script", id: "half_fuel"},
-								type: "half_fuel",
-								description: "Fuel at half full",
-								severity: "Medium",
-								mo_id: probe.mo_id,
-								ts: probe.ts,
-								latitude: probe.matched_latitude || probe.latitude,
-								longitude: probe.matched_longitude || probe.longitude,
-								simulated: VEHICLE_VENDOR_IBM === vehicle.vehicleInfo.vendor
-							};
-						alerts.push(alert);
-					}
+				var fuelLevel = self._getFuelLevel(probe, vehicle);
+				var prevFuelLevel = self._getFuelLevel(vehicle.prevProbe, vehicle);
+				// half fuel : 10% to 50% of fuel tank
+				if((0.1 > prevFuelLevel || prevFuelLevel >= 0.5) && (0.1 <= fuelLevel && fuelLevel < 0.5)){
+					var alert = {
+							source: {type: "script", id: "half_fuel"},
+							type: "half_fuel",
+							description: "Fuel at half full",
+							severity: "Medium",
+							mo_id: probe.mo_id,
+							ts: probe.ts,
+							latitude: probe.matched_latitude || probe.latitude,
+							longitude: probe.matched_longitude || probe.longitude,
+							simulated: VEHICLE_VENDOR_IBM === vehicle.vehicleInfo.vendor
+						};
+					alerts.push(alert);
 				}
 				return alerts;
 			},
 			closeRule: function(alert, probe, vehicle){
-				if(vehicle && vehicle.vehicleInfo && vehicle.vehicleInfo.properties && vehicle.vehicleInfo.properties.fuelTank
-				&& probe && probe.props && probe.props.fuel){
-					var fuelTank = vehicle.vehicleInfo.properties.fuelTank;
-					var fuel = probe.props.fuel;
-					var fuelRatio = fuel/fuelTank;
-					if(fuelRatio < 0.1 || 0.5 < fuelRatio){
-						alert.closed_ts = probe.ts;
-						return alert;
-					}
+				var fuelLevel = self._getFuelLevel(probe, vehicle);
+				if(0.1 > fuelLevel || fuelLevel > 0.5){
+					alert.closed_ts = probe.ts;
+					return alert;
 				}
 			}
 		});
@@ -151,8 +134,8 @@ _.extend(driverInsightsAlert, {
 		this.registerAlertRule("high_engine_temp", {
 			fireRule: function(probe, vehicle){
 				var alerts = [];
-				if(vehicle && (!vehicle.prevProbe || (vehicle.prevProbe && vehicle.prevProbe.props && vehicle.prevProbe.props.engineTemp <= 120))
-				&& probe && probe.props && probe.props.engineTemp > 120){
+				var engineOilTemperature = self._getEngineOilTemperature(probe, vehicle);
+				if (engineOilTemperature > 120) {
 					var alert = {
 							source: {type: "script", id: "high_engine_temp"},
 							type: "high_engine_temp",
@@ -169,12 +152,28 @@ _.extend(driverInsightsAlert, {
 				return alerts;
 			},
 			closeRule: function(alert, probe, vehicle){
-				if(vehicle && probe && probe.props && probe.props.engineTemp <= 120){
+				var engineOilTemperature = self._getEngineOilTemperature(probe, vehicle);
+				if (engineOilTemperature <= 120) {
 					alert.closed_ts = probe.ts;
 					return alert;
 				}
 			}
 		});
+	},
+	_getFuelLevel: function(probe, vehicle) {
+		if (!probe || !probe.props) {
+			return;
+		}
+		if (probe.props.fuelLevel) {
+			return probe.props.fuelLevel / 100;
+		}
+		if (vehicle && vehicle.vehicleInfo && vehicle.vehicleInfo.properties && vehicle.vehicleInfo.properties.fuelTank	&& probe.props.fuel) {
+			return probe.props.fuel / vehicle.vehicleInfo.properties.fuelTank;
+		}
+		return;
+	},
+	_getEngineOilTemperature: function(probe, vehicle) {
+		return probe && probe.props && probe.props.engineTemp;
 	},
 	_searchAlertIndex: function(opts){
 		return Q(this.db).then(function(db){

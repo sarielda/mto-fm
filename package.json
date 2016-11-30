@@ -30,6 +30,7 @@
     "request": "2.69.0",
     "underscore": "1.8.3",
     "ws": "0.8.0",
+    "ibmiotf": "0.2.25",
     "cf-deployment-tracker-client": "0.0.x"
   },
   "repository": {

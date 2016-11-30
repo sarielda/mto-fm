@@ -56,17 +56,20 @@ var driverInsightsAsset = {
 	getVehicle: function(mo_id){
 		return this._getAsset("vehicle", mo_id);
 	},
-	addVehicle: function(vehicle){
+	addVehicle: function(vehicle, noRefresh){
 		vehicle = this._mergeObject({
 					status:"inactive",
 					properties: {
 						fuelTank: 60
 					}
 				}, vehicle||{});
-		return this._addAsset("vehicle", vehicle, true);
+		return this._addAsset("vehicle", vehicle, !noRefresh);
 	},
-	updateVehicle: function(id, vehicle, overwrite){
-		return this._updateAsset("vehicle", id || vehicle.mo_id, vehicle, overwrite, true);
+	updateVehicle: function(id, vehicle, overwrite, noRefresh){
+		return this._updateAsset("vehicle", id || vehicle.mo_id, vehicle, overwrite, !noRefresh);
+	},
+	refreshVehicle: function(){
+		return this._refreshAsset("vehicle");
 	},
 	deleteVehicle: function(mo_id){
 		return this._deleteAsset("vehicle", mo_id);
@@ -81,12 +84,15 @@ var driverInsightsAsset = {
 	getDriver: function(driver_id){
 		return this._getAsset("driver", driver_id);
 	},
-	addDriver: function(driver){
+	addDriver: function(driver, noRefresh){
 		driver = _.extend({"status":"active"}, driver||{});
-		return this._addAsset("driver", driver, true);
+		return this._addAsset("driver", driver, !noRefresh);
 	},
-	updateDriver: function(id, driver, overwrite){
-		return this._updateAsset("driver", id || driver.driver_id, driver, overwrite, true);
+	updateDriver: function(id, driver, overwrite, noRefresh){
+		return this._updateAsset("driver", id || driver.driver_id, driver, overwrite, !noRefresh);
+	},
+	refreshDriver: function(){
+		return this._refreshAsset("driver");
 	},
 	deleteDriver: function(driver_id){
 		return this._deleteAsset("driver", driver_id);
@@ -121,11 +127,14 @@ var driverInsightsAsset = {
 	getEventType: function(id){
 		return this._getAsset("eventtype", id);
 	},
-	addEventType: function(event_type){
-		return this._addAsset("eventtype", event_type, true);
+	addEventType: function(event_type, noRefresh){
+		return this._addAsset("eventtype", event_type, !noRefresh);
 	},
-	updateEventType: function(id, event_type, overwrite) {
-		return this._updateAsset("eventtype", id || event_type.event_type, event_type, overwrite, true);
+	updateEventType: function(id, event_type, overwrite, noRefresh) {
+		return this._updateAsset("eventtype", id || event_type.event_type, event_type, overwrite, !noRefresh);
+	},
+	refreshEventType: function(){
+		return this._refreshAsset("eventtype");
 	},
 	deleteEventType: function(id){
 		return this._deleteAsset("eventtype", id);
@@ -267,7 +276,7 @@ var driverInsightsAsset = {
 		var api = "/" + context + (id?"/"+id:"");
 		Q.when(this._run(id?"PUT":"POST", api, null, asset), function(response){
 			if (refresh) {
-				Q.when(self._run("POST", "/" + context + "/refresh"), function(refreshed){
+				Q.when(self._refreshAsset(context), function(refreshed) {
 					deferred.resolve(response);
 				})["catch"](function(err){
 					deferred.reject(err);
@@ -275,6 +284,18 @@ var driverInsightsAsset = {
 			} else {
 				deferred.resolve(response);
 			}
+		})["catch"](function(err){
+			deferred.reject(err);
+		}).done();
+		return deferred.promise;
+	},
+	/*
+	 * Refresh assets on the vehicle data hub hosts
+	 */
+	_refreshAsset: function(context) {
+		var deferred = Q.defer();
+		Q.when(this._run("POST", "/" + context + "/refresh"), function(response){
+			deferred.resolve(response);
 		})["catch"](function(err){
 			deferred.reject(err);
 		}).done();
