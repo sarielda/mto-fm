@@ -4,10 +4,10 @@
     "jasmine": "registry:dt/jasmine#2.2.0+20160621224255",
     "node": "registry:dt/node#6.0.0+20160909174046",
 
-    "d3": "github:DefinitelyTyped/DefinitelyTyped/d3/d3.d.ts",
-    "c3": "github:DefinitelyTyped/DefinitelyTyped/c3/c3.d.ts",
-    "openlayers": "github:DefinitelyTyped/DefinitelyTyped/openlayers/openlayers.d.ts",
-    "moment": "github:DefinitelyTyped/DefinitelyTyped/moment/moment.d.ts",
-    "underscore": "github:DefinitelyTyped/DefinitelyTyped/underscore/underscore.d.ts"
+    "d3": "github:DefinitelyTyped/DefinitelyTyped/d3/d3.d.ts#types",
+    "c3": "github:DefinitelyTyped/DefinitelyTyped/c3/c3.d.ts#types",
+    "openlayers": "github:DefinitelyTyped/DefinitelyTyped/openlayers/openlayers.d.ts#types",
+    "moment": "github:DefinitelyTyped/DefinitelyTyped/moment/moment.d.ts#types",
+    "underscore": "github:DefinitelyTyped/DefinitelyTyped/underscore/underscore.d.ts#types"
   }
 }
