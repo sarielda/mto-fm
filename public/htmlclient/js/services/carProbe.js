@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -19,6 +19,7 @@ angular.module('htmlClient')
     	driveEvent: null,
     	deviceId: null,	// set by setting UI (IoTP)
     	vehicleId: null,// get from service (IoT4A)
+    	siteId: null,// get from service (IoT4A)
     	driverId: null,	// get from service (IoT4A) 
     	
     	vehicleData: {}, // for simulation
@@ -184,6 +185,7 @@ angular.module('htmlClient')
     		}
 
 			if (assets) {
+	    		this.siteId = assets.siteId;
 	    		this.vehicleId = assets.vehicleId;
 	    		this.driverId = assets.driverId;
 			}
@@ -259,12 +261,13 @@ angular.module('htmlClient')
 			}
 
 			try {
+				var vehicleId = (this.siteId ? (this.siteId + ":" + this.vehicleId) : this.vehicleId);
 				var data = {
 					ts: Date.now(),
 					lat: this.deviceLocation.lat,
 					lng: this.deviceLocation.lng,
 					altitude: this.deviceLocation.altitude,
-					mo_id: this.vehicleId,
+					mo_id: vehicleId,
 					driver_id: this.driverId,
 					props: {}
 				};

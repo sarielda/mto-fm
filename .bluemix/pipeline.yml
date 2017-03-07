@@ -24,6 +24,7 @@ stages:
         cd ./webclient
         echo "-- Installing dependencies..."
         npm install || echo npm-debug.log
+        test -d typings # make sure that typings folder exists
         echo "-- Compiling typescript..."
         npm run tsc
         npm run gulp

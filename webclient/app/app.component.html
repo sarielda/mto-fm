@@ -17,8 +17,10 @@
             </p>
 
             <p class="floatRight medium-show large-hide" id="hamburger">
-                <a href="#" class="btn btn-demo em-Modal-Call" rel="loginModal">
-                    <i class="icon-menu"></i>
+                <a href="#" id="menuButton">
+                    <span class="first"></span>
+                    <span class="second"></span>
+                    <span class="third"></span>
                 </a>
             </p>
         </div>
@@ -26,7 +28,7 @@
 </header>
 
 <div class="content">
-    <aside class="sidebar" ng-controller="sidebar">
+    <aside id="sidebar" class="sidebar" ng-controller="sidebar">
         <ul class="sidebarItems">
             <li *ngFor="let sidebarItem of sidebarItems" routerLinkActive="active">
                 <a [routerLink]="[sidebarItem.route]"><i class="{{sidebarItem.icon}}"></i>{{sidebarItem.title}}</a>
@@ -34,26 +36,8 @@
         </ul>
     </aside>
 
-    <div class="mainContent">
+    <div id="mainContent" class="mainContent">
+        <div class="overlay"></div>
         <router-outlet></router-outlet>
-    </div>
-</div>
-
-<div class="em-Modal" id="loginModal" ng-controller="sidebar">
-    <div class="em-Modal-Content">
-        <div class="em-Modal-Close">
-            <a href="#">
-                <i class="icon-close"></i>
-            </a>
-        </div>
-
-        <ul class="modalMenu">
-            <li *ngFor="let sidebarItem of sidebarItems" routerLinkActive="active">
-                <a [routerLink]="[sidebarItem.route]">
-                    <i class="{{sidebarItem.icon}} iconBlock"></i>
-                    {{sidebarItem.title}}
-                </a>
-            </li>
-        </ul>
     </div>
 </div>

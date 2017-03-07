@@ -5,11 +5,15 @@ declared-services:
   FleetIoTForAuto:
     label: iotforautomotive
     plan: free_shared
+#  FleetIoTPlatform:
+#    label: iotforautomotive
+#    plan: free_shared
 
 applications:
   - services:
       - FleetCloudantDB
       - FleetIoTForAuto
+#      - FleetIoTPlatform
     name: iota-starter-server-fleetmanagement
     memory: 512M
 #    host: iota-starter-server-fleetmanagement

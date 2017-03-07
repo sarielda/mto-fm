@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -22,11 +22,10 @@ export abstract class MapItemHelper<T extends Item> {
   preCreatingItemMap = {};
   itemLabel: string;
   featureExtension: any = null;
+  monitors = [];
 
   constructor(public map: ol.Map, public itemLayer: ol.layer.Vector) {
-    this.map.getView().on("change:center", this.viewChanged.bind(this));
-    this.map.getView().on("change:resolution", this.viewChanged.bind(this));
-    setTimeout(this.updateView.bind(this), 100);
+    this.startMonitoring();
   }
 
   /*
@@ -56,6 +55,26 @@ export abstract class MapItemHelper<T extends Item> {
   }
 
   /*
+  * Start monitoring change of view
+  */
+  public startMonitoring() {
+  	this.stopMonitoring();
+    this.monitors.push(this.map.getView().on("change:center", this.viewChanged.bind(this)));
+    this.monitors.push(this.map.getView().on("change:resolution", this.viewChanged.bind(this)));
+    setTimeout(this.updateView.bind(this), 100);
+  }
+
+  /*
+  * Stop monitoring change of view
+  */
+  public stopMonitoring() {
+  	_.each(this.monitors, function(monitor) {
+  		this.map.getView().unByKey(monitor);
+  	}.bind(this));
+    this.monitors = [];
+  }
+
+  /*
   * callback function to be called when view position is changed
   */
   public viewChanged() {
@@ -71,7 +90,7 @@ export abstract class MapItemHelper<T extends Item> {
   */
   public updateView() {
     let size = this.map.getSize();
-    if (!size) {
+    if (!size || this.monitors.length == 0) {
       return;
     }
     let ext = this.map.getView().calculateExtent(size);
@@ -286,6 +305,18 @@ export abstract class MapItemHelper<T extends Item> {
         delete self.itemMap[id];
       }
     });
+  }
+
+  clearAllItems() {
+    let self = this;
+    _.each(<any>this.itemMap, function(value:any, key) {
+        let features = value.features;
+        _.each(features || [], function(feature: ol.Feature) {
+          if (feature)
+            self.itemLayer.getSource().removeFeature(feature);
+        });
+     });
+     this.itemMap = {};
   }
 
   public abstract createItem(param: any): T;

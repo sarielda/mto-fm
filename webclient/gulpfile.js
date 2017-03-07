@@ -3,15 +3,17 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
-var SystemBuilder = require('systemjs-builder');
-var gulp = require('gulp');
-var rename = require('gulp-rename');
-var gulpSequence = require('gulp-sequence');
-var rimraf = require('rimraf');
+var SystemBuilder = require('systemjs-builder'),
+    gulp = require('gulp'),
+    rename = require('gulp-rename'),
+    gulpSequence = require('gulp-sequence'),
+    rimraf = require('rimraf'),
+    cleanCSS = require('gulp-clean-css'),
+    concatCss = require('gulp-concat-css');
 
 var argv_prod = false;
 
@@ -56,7 +58,6 @@ gulp.task('app-index', function(){
 });
 
 gulp.task('app-bundler', function(cb) {
-
   var builder = new SystemBuilder('..');
   builder.loadConfig('./systemjs.config-prod.js')
     .then(function(){
@@ -81,5 +82,20 @@ gulp.task('app-bundler', function(cb) {
     })
 });
 
-gulp.task('default', gulpSequence('clean', ['vendor', 'app-bundler', 'app-index']));
+gulp.task('cssBundler', function () {
+  return gulp.src(['css/style.css', '!css/font--*.css'])
+    .pipe(concatCss("bundle.css"))
+    .pipe(gulp.dest('css/bundle'))
+    .pipe(cleanCSS({debug: true}, function(details) {
+        console.log(details.name + ': ' + details.stats.originalSize);
+        console.log(details.name + ': ' + details.stats.minifiedSize);
+    }))
+    .pipe(gulp.dest('dist/css'));
+});
+
+gulp.task('cssBundler:watch', function () {
+  gulp.watch('css/*.css', ['cssBundler']);
+});
+
+gulp.task('default', gulpSequence('clean', ['vendor', 'app-bundler', 'app-index', 'cssBundler'/*, 'cssBundler:watch'*/]));
 gulp.task('dist', gulpSequence('default', 'app-res'));

@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -28,6 +28,10 @@ function handleAssetError(res, err) {
 	var message = err.message || (err.data && err.data.message) || err;
 	return res.status(status).send(message);
 }
+
+router.get("/capability/geofence", authenticate, function(req, res) {
+	res.send({available: driverInsightsGeofence.isAvailable()});
+});
 
 router.post("/geofence", authenticate, function(req, res){
 	Q.when(driverInsightsGeofence.createGeofence(req.body), function(response){

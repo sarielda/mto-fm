@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -13,8 +13,8 @@ var _ = require("underscore");
 var debug = require('debug')('rule');
 debug.log = console.log.bind(console);
 
-var XML_GENERAL_SECTION = "<RuleType>{rule_id}</RuleType>" +
-						  	"<RuleID>{rule_type}</RuleID>" +
+var XML_GENERAL_SECTION = "<RuleType>{rule_type}</RuleType>" +
+						  	"<RuleID>{rule_id}</RuleID>" +
 							"<Name>{name}</Name>" +
 							"<Description>{description}</Description>";
 

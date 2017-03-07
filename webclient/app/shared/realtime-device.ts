@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -29,11 +29,26 @@ export class RealtimeDeviceDataProvider {
           if (!sample)
               return;
           // fixup samples
-          if(!sample.t) sample.t = sample.ts;
-          if(!sample.deviceID) sample.deviceID = sample.mo_id;
-          if(!sample.lat) sample.lat = sample.latitude || sample.matched_latitude;
-          if(!sample.lng) sample.lng = sample.longitude || sample.matched_longitude;
-
+          if (sample.aggregated) {
+            if(!sample.deviceID) sample.deviceID = sample.group_id;
+            var center = sample.center;
+            if (center) {
+                sample.lng = center.lon;
+                sample.lat = center.lat;
+            } else {
+                var geo = sample.validGeometry || sample.geometry;
+                if (geo) {
+                    sample.lat = (geo.max_lat + geo.min_lat) / 2;
+                    sample.lng = (geo.max_lon + geo.min_lon) / 2;
+                }
+            }
+          } else {
+	          if(!sample.t) sample.t = sample.ts;
+	          if(!sample.deviceID) sample.deviceID = sample.mo_id;
+	          if(!sample.lat) sample.lat = sample.latitude || sample.matched_latitude;
+	          if(!sample.lng) sample.lng = sample.longitude || sample.matched_longitude;
+          }
+         
           // fixup alerts
           if(sample.info && sample.info.alerts && !sample.status){
             // translate alerts to troubled, critical, normal
@@ -64,7 +79,7 @@ export class RealtimeDeviceDataProvider {
               device.addSample(sample);
           }
           else {
-              device = this.devices[sample.deviceID] = new RealtimeDeviceData(sample);
+              device = this.devices[sample.deviceID] = sample.aggregated ? new RealtimeDeviceGroupData(sample) : new RealtimeDeviceData(sample);
           }
       });
       if(syncAllDevices){
@@ -184,4 +199,17 @@ export class RealtimeDeviceData {
     if (deleteCount > 1)
         this.samples.splice(0, deleteCount);
   };
+}
+
+export class RealtimeDeviceGroupData extends RealtimeDeviceData {
+  getAt(animationProgress) {
+      return this.latestSample;
+  }
+
+  public addSample(sample, animationProgress?) {
+      this.latestSample = sample;
+  }
+
+  removeOldSamples(animationProgress) {
+  }
 }

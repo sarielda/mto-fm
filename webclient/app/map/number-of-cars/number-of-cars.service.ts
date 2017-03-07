@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -30,10 +30,25 @@ export class NumberOfCarsService {
     return Observable.interval(interval * 1000)
       .map(x => {
         let devices = this.animatedDeviceManager.getDevices();
-        var all = devices.length;
-        var troubled = devices.filter(device => (device.latestSample && device.latestSample.status === 'troubled')).length;
-        var critical = devices.filter(device => (device.latestSample && device.latestSample.status === 'critical')).length;
-        return <Counts>{ _region: region, all: all, troubled: troubled, critical: critical };
+        let all = -1;
+        let all_anbiguous = false;
+        let troubled = -1;
+        let critical = -1;
+        if (devices.length > 0 && devices[0].latestSample && devices[0].latestSample.aggregated) {
+          all = 0;
+          devices.forEach(function(device) {
+            if (device.latestSample.count < 0) {
+              all_anbiguous = true;
+            } else if (all >= 0) {
+              all += device.latestSample.count;
+            }
+          });
+        } else {
+          all = devices.length;
+          troubled = devices.filter(device => (device.latestSample && device.latestSample.status === 'troubled')).length;
+          critical = devices.filter(device => (device.latestSample && device.latestSample.status === 'critical')).length;
+ 		}
+         return <Counts>{ _region: region, all: all, all_anbiguous: all_anbiguous, troubled: troubled, critical: critical };
       })
       .startWith(loadingData)
       .do(counts => this.log('getNumberOfCars(%s) item: %s', debugKey, counts.all));
@@ -47,6 +62,7 @@ export class NumberOfCarsService {
 const loadingData: Counts = {
   _region: undefined,
   all: -1,
+  all_anbiguous: false,
   troubled: -1,
   critical: -1,
 };
@@ -54,6 +70,7 @@ const loadingData: Counts = {
 const sampleData: Counts = {
   _region: undefined,
   all: 25,
+  all_anbiguous: false,
   troubled: 10,
   critical: 2,
 };

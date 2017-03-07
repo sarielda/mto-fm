@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -172,6 +172,9 @@ angular.module('fleetManagementSimulator', ['ui.router', 'ngAnimate'])
 					var url = "../htmlclient/#/home" 
 						+ "?vehicleId=" + vehicle.mo_id 
 						+ "&driverId=" + drivers.data[0].driver_id; 
+					if (vehicle.siteid) {
+						url += "&siteId=" + vehicle.siteid;
+					}
 					if(vehicle.vendor){
 						url += "&vendor=" + vehicle.vendor;
 					}
@@ -182,7 +185,14 @@ angular.module('fleetManagementSimulator', ['ui.router', 'ngAnimate'])
 						url += "&loc=" + loc;
 					}
 					vehicle.url = $sce.trustAsResourceUrl(url);
-					vehicle.display = i === 0;		
+					vehicle.display = i === 0;
+					if (vehicle.properties) {
+						var props = {};
+						for (var key in vehicle.properties) {
+							props[key.toLowerCase()] = vehicle.properties[key];
+						}
+						vehicle.properties = props;
+					}
 				});
 
 				$scope.vehicles = vehicles;

@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -11,7 +11,7 @@ var driverInsightsAlert = module.exports = {};
 
 var _ = require("underscore");
 var Q = require("q");
-var request = require("request");
+var request = require('./requestSecureGw.js'); 
 var cfenv = require("cfenv");
 var moment = require("moment");
 var dbClient = require('./../cloudantHelper.js');
@@ -28,7 +28,7 @@ var BULK_INSERT_INTERVAL = "1000";
 _.extend(driverInsightsAlert, {
 	/*
 	 * {mo_id: {
-	 * 	vehicleInfo: {status: "Active", properties: {fuelTank: 60}},
+	 * 	vehicleInfo: {status: "Active", properties: {fueltank: 60}},
 	 * 	prevProbe: {ts: xxxxxxxxx, ...., props: {fuel: 49.1, engineTemp: 298.2}}
 	 * }}
 	 */
@@ -167,8 +167,8 @@ _.extend(driverInsightsAlert, {
 		if (probe.props.fuelLevel) {
 			return probe.props.fuelLevel / 100;
 		}
-		if (vehicle && vehicle.vehicleInfo && vehicle.vehicleInfo.properties && vehicle.vehicleInfo.properties.fuelTank	&& probe.props.fuel) {
-			return probe.props.fuel / vehicle.vehicleInfo.properties.fuelTank;
+		if (vehicle && vehicle.vehicleInfo && vehicle.vehicleInfo.properties && vehicle.vehicleInfo.properties.fueltank	&& probe.props.fuel) {
+			return probe.props.fuel / vehicle.vehicleInfo.properties.fueltank;
 		}
 		return;
 	},
@@ -342,22 +342,41 @@ _.extend(driverInsightsAlert, {
 		if(!area){
 			return Q.reject();
 		}
-		var deferred = Q.defer();
 		var self = this;
+		var deferred = Q.defer();
 		Q.when(driverInsightsProbe.getCarProbe(area), function(probes){
 			if(probes.length > 0){
-				var mo_id_condition = "(" + probes.map(function(probe){
-					return "mo_id:"+probe.mo_id;
-				}).join(" OR ") + ")";
-				conditions.push(mo_id_condition);
-				Q.when(self.getAlerts(conditions, includeClosed, limit), function(result){
-					deferred.resolve(result);
+				var mo_ids = probes.map(function(probe){return probe.mo_id;});
+				self.getAlertsForVehicles(mo_ids, includeClosed, limit).then(function(results){
+					return results;
 				});
 			}else{
 				deferred.resolve({alerts: []});
 			}
 		});
 		return deferred.promise;
+	},
+	getAlertsForVehicles: function(mo_ids, includeClosed, limit){
+		var self = this;
+		var _getAlerts100 = function(mo_ids){
+			var mo_id_condition = "(" + mo_ids.map(function(mo_id){
+				return "mo_id:\""+mo_id+"\"";
+			}).join(" OR ") + ")";
+			return self.getAlerts([mo_id_condition], includeClosed, limit);
+		};
+		var results = [];
+		for(var i=0; i<mo_ids.length/100; i++){
+			results.push(_getAlerts100(mo_ids.slice(i*100, (i+1)*100)));
+		}
+		return Q.allSettled(results).then(function(fulfilled){
+			var alerts = [];
+			fulfilled.forEach(function(f){
+				if(f.value && f.value.alerts){
+					alerts = alerts.concat(f.value.alerts);
+				}
+			});
+			return {alerts: alerts};
+		});
 	},
 	getAlerts: function(conditions, includeClosed, limit){
 		var opt = {sort: "-ts", include_docs:true};

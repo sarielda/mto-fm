@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -26,7 +26,7 @@ function handleAssetError(res, err) {
 	//{message: msg, error: error, response: response}
 	console.error('error: ' + JSON.stringify(err));
 	var response = err.response;
-	var status = (response && (response.status||response.statusCode)) || 500;
+	var status = err.statusCode || (response && (response.status||response.statusCode)) || 500;
 	var message = err.message || (err.data && err.data.message) || err;
 	return res.status(status).send(message);
 }
@@ -163,6 +163,14 @@ router["delete"]("/vendor/:vendor", authenticate, function(req, res){
 	})["catch"](function(err){
 		return handleAssetError(res, err);
 	});
+});
+router.post("/eventtype", authenticate, function(req, res){
+	var eventtype = req.body && req.body.eventtype;
+	Q.when(driverInsightsAsset.addEventType(eventtype), function(response){
+		res.send(response);
+	})["catch"](function(err){
+		return handleAssetError(res, err);
+	}).done();
 });
 router.get("/eventtype", authenticate, function(req, res){
 	var params = null;

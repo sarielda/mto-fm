@@ -6,7 +6,7 @@
 		"npm": "2.x"
 	},
 	"scripts": {
-		"start": "tsc && concurrently \"npm run tsc:w\" \"npm run lite\"",
+		"start": "tsc && gulp && concurrently \"npm run tsc:w\" \"npm run lite\"",
 		"lite": "lite-server -c ./bs-config.json",
 		"postinstall": "npm ls typings && typings install || echo .",
 		"tsc": "tsc",
@@ -40,6 +40,8 @@
 		"gulp": "^3.9.0",
 		"gulp-rename": "^1.2.2",
 		"gulp-sequence": "^0.3.2",
+		"gulp-clean-css": "^2.3.2",
+		"gulp-concat-css": "^2.3.0",
 		"rimraf": "^2.5.1"
 	}
 }

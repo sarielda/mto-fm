@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -15,6 +15,7 @@ import{ Item } from "./map-item-helper";
 
 @Injectable()
 export class MapGeofenceHelper extends MapItemHelper<Geofence> {
+  isAvailable: boolean = false;
   targetStyle: ol.style.Style;
   geometryBorderStyle: ol.style.Style;
   tentativeStyle: ol.style.Style;
@@ -22,6 +23,11 @@ export class MapGeofenceHelper extends MapItemHelper<Geofence> {
   constructor(public map: ol.Map, public itemLayer: ol.layer.Vector, public geofenceService: GeofenceService, options: any = {}) {
     super(map, itemLayer);
 
+    this.geofenceService.isAvailable().subscribe(data => {
+      if (data) {
+        this.isAvailable = true;
+      }
+    });
     options = options || {};
     this.setItemLabel(options.itemLabel || "Geofence");
 
@@ -34,7 +40,7 @@ export class MapGeofenceHelper extends MapItemHelper<Geofence> {
       });
       self.geometryBorderStyle = new ol.style.Style({
           stroke: new ol.style.Stroke({
-            color: [255, 0, 128, 0.3],
+            color: [255, 0, 128, 0.7],
             width: 2
           })
       });
@@ -74,7 +80,6 @@ export class MapGeofenceHelper extends MapItemHelper<Geofence> {
         decorate: function(item: any, features: ol.Feature[]) {
           if (item.geometry) {
             let areaFeature = null;
-            let _this = this;
             _.each(features, function(feature) {
               if (feature.get("border")) {
 
@@ -230,7 +235,7 @@ export class MapGeofenceHelper extends MapItemHelper<Geofence> {
 
   // query items within given area
   public queryItems(min_longitude: number, min_latitude: number, max_longitude: number, max_latitude: number) {
-    return this.geofenceService.queryGeofences({
+    return this.isAvailable && this.geofenceService.queryGeofences({
         min_latitude: min_latitude,
         min_longitude: min_longitude,
         max_latitude: max_latitude,
@@ -244,7 +249,7 @@ export class MapGeofenceHelper extends MapItemHelper<Geofence> {
 
   // get item with id
   public getItem(id: string) {
-    return this.geofenceService.getGeofence(id).map(data => {
+    return this.isAvailable && this.geofenceService.getGeofence(id).map(data => {
       return new Geofence(data);
     });
   }
@@ -270,7 +275,7 @@ export class MapGeofenceHelper extends MapItemHelper<Geofence> {
       return new ol.geom.Polygon([polygonCoordinates]);
     } else if (direction === "out") {
       // create target area
-      let polygonCoordinates = this.createGeofenceCoordinate(area, "rectangle");
+      let polygonCoordinates = this.createGeofenceCoordinate(geometry, "rectangle");
       let polygon = new ol.geom.Polygon([polygonCoordinates]);
 
       // create clip area

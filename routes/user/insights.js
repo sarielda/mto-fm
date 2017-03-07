@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -21,9 +21,12 @@ var driverInsightsProbe = require('../../driverInsights/probe');
 var driverInsightsContextMapping = require('../../driverInsights/contextMapping');
 var driverInsightsAlert = require('../../driverInsights/fleetalert.js');
 var dbClient = require('../../cloudantHelper.js');
+var probeAggregator = require('./aggregator.js');
 
 var debug = require('debug')('monitoring:cars');
 debug.log = console.log.bind(console);
+
+var AGGREGATION_THRESHOLD = isNaN(process.env.AGGREGATION_THRESHOLD) ? 500 : process.env.AGGREGATION_THRESHOLD;
 
 function handleAssetError(res, err) {
 	//{message: msg, error: error, response: response}
@@ -89,10 +92,24 @@ router.get('/carProbe', authenticate, function(req, res) {
 
 	getCarProbe(qs, true).then(function(probes){
 		// send normal response
-		var ts = _.max(_.map(probes, function(d){ return d.lastEventTime || d.t || d.ts; }));
+		var ts;
+		var count;
+		var devices;
+		var aggregated = !!probes.aggregated;
+		if (aggregated) {
+			var deviceInfo = probeAggregator.convertToDeviceInfo(probes.summary);
+			count = deviceInfo.count;
+			devices = deviceInfo.devices;
+		} else {
+			ts = _.max(_.map(probes, function(d){ return d.lastEventTime || d.t || d.ts; }));
+			count = probes.length;
+			devices = probes;
+		}
+
 		res.send({
-			count: probes.length,
-			devices: probes,
+			aggregated: aggregated,
+			count: count,
+			devices: devices,
 			serverTime: (isNaN(ts) || !isFinite(ts)) ? Date.now() : ts,
 			wssPath: wssUrl + '?' + "region=" + encodeURI(JSON.stringify(extent))
 		});
@@ -230,14 +247,30 @@ var initWebSocketServer = function(server, path){
 				return { min_latitude: -90, min_longitude: -180,
 						 max_latitude:  90, max_longitude:  180 };
 			}
+			if(client.aggregationNeeded){
+				return Q();
+			}
 			return getCarProbe(getQs(), true).then(function(probes){
-				probes = probes || [];
+				var count;
+				var devices;
+				var aggregated = !!probes.aggregated;
+				client.aggregationNeeded = aggregated;
+				if (aggregated) {
+					var deviceInfo = probeAggregator.convertToDeviceInfo(probes.summary);
+					count = deviceInfo.count;
+					devices = deviceInfo.devices;
+				} else {
+					count = probes.length;
+					devices = probes;
+				}
+
 				// construct message
 				var msgs = JSON.stringify({
-					count: (probes.length),
-					devices: (probes),
-					deleted: undefined,
-				});
+						aggregated: aggregated,
+						count: (count),
+						devices: (devices),
+						deleted: undefined,
+					});
 				try {
 					client.send(msgs);
 					debug('  sent WSS message. ' + msgs);
@@ -287,6 +320,12 @@ var initWebSocketServer = function(server, path){
 				var j = decodeURI(url.substr(qsIndex + 8)); // 8 is length of "?region="
 				var extent = JSON.parse(j);
 				client.extent = normalizeExtent(extent);
+				var regions = probeAggregator.createRegions(
+					client.extent.min_lng,
+					client.extent.min_lat,
+					client.extent.max_lng,
+					client.extent.max_lat);
+				client.aggregationNeeded = !!regions;
 			}catch(e){
 				console.error('Error on parsing extent in wss URL', e);
 			}
@@ -295,6 +334,7 @@ var initWebSocketServer = function(server, path){
 }
 
 function getCarProbe(qs, addAlerts){
+	var regions = probeAggregator.createRegions(qs.min_longitude, qs.min_latitude, qs.max_longitude, qs.max_latitude);
 	var probes = Q(driverInsightsProbe.getCarProbe(qs).then(function(probes){
 		// send normal response
 		(probes||[]).forEach(function(p){
@@ -303,18 +343,25 @@ function getCarProbe(qs, addAlerts){
 				p.deviceID = p.mo_id;
 			}
 		});
+		if(!regions && AGGREGATION_THRESHOLD > 1 && probes.length > AGGREGATION_THRESHOLD){
+			regions = probeAggregator.createRegions(qs.min_longitude, qs.min_latitude, qs.max_longitude, qs.max_latitude, -1);
+		}
+		if (regions) {
+			return probeAggregator.aggregate(regions, probes);
+		}
 		return probes;
 	}));
 	if(addAlerts) {
-		probes = Q(probes.then(function(probes){
+		probes = Q(probes.then(function(result){
+			if (result.summary) {
+				return result;
+			}
+			var probes = result;
 			if(!probes || probes.length == 0)
 				return probes;
-			var conditions = [];
-			var mo_id_condition = "(" + probes.map(function(probe){
-				return "mo_id:"+probe.mo_id;
-			}).join(" OR ") + ")";
-			conditions.push(mo_id_condition);
-			return driverInsightsAlert.getAlerts(conditions, /*includeClosed*/false, 200).then(function(result){
+
+			var mo_ids = probes.map(function(probe){return probe.mo_id;});
+			return driverInsightsAlert.getAlertsForVehicles(mo_ids, /*includeClosed*/false, 200).then(function(result){
 				// result: { alerts: [ { closed_ts: n, description: s, mo_id: s, severity: s, timestamp: s, ts: n, type: s }, ...] }
 				var alertsByMoId = _.groupBy(result.alerts || [], function(alert){ return alert.mo_id; });
 				probes.forEach(function(probe){

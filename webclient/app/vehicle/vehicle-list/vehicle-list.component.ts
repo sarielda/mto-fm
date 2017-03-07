@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -18,7 +18,7 @@ import { MomentPipe } from '../../utils/moment.pipe';
   moduleId: module.id,
   selector: 'vehicle-list',
   templateUrl: 'vehicle-list.component.html',
-  styleUrls: ['../../../css/table.css', 'vehicle-list.component.css'],
+  styleUrls: ['vehicle-list.component.css'],
 })
 
 export class VehicleListComponent {
@@ -328,7 +328,7 @@ class Vehicle {
   }
 
   getData() {
-    let data = {};
+    let data:any = {};
     for (let key in this) {
       if (key.lastIndexOf("__", 0) !== 0) {
         data[key] = this[key];

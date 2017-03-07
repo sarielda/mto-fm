@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -70,6 +70,7 @@ export class RealtimeMapComponent implements OnInit {
 	carsLayer: ol.layer.Vector;
 	mapHelper: MapHelper;
 	mapItemHelpers = {};
+	aggregationMode: boolean = false;
 
 	mapElementId = 'carmonitor';
 	popoverElemetId = 'carmonitorpop';
@@ -117,7 +118,12 @@ export class RealtimeMapComponent implements OnInit {
 		this.carsLayer = new ol.layer.Vector({
 			source: new ol.source.Vector(),
 			style: function(feature){
-				return getCarStyle(feature.get('carStatus'));
+				var device = feature.get('device');
+				if (device.aggregated) {
+					return getGroupStyle(device);
+				} else {
+					return getCarStyle(feature.get('carStatus'));
+				}
 			},
 			renderOrder: undefined
 		});
@@ -276,6 +282,16 @@ export class RealtimeMapComponent implements OnInit {
 			var device = feature.get('device');
 			if(device){
 				let result = { content: '', title: null };
+				var sample = device.latestSample;
+				if (sample && sample.aggregated) {
+						result.content += '<div style="white-space: nowrap;">Cars in this area: ' + (sample.count >= 0 ? _.escape(sample.count) : "Unknown") + "</div>";
+						result.content += '<div style="white-space: nowrap;">Min Longitude: ' + _.escape(sample.geometry.min_lon) + "</div>";
+						result.content += '<div style="white-space: nowrap;">Min Latitude: ' + _.escape(sample.geometry.min_lat) + "</div>";
+						result.content += '<div style="white-space: nowrap;">Max Longitude: ' + _.escape(sample.geometry.max_lon) + "</div>";
+						result.content += '<div style="white-space: nowrap;">Max Latitude: ' + _.escape(sample.geometry.max_lat) + "</div>";
+						return result;
+				}
+
 				result.content = ('<span style="white-space: nowrap;">ID: '
 												+ '<a onclick="document[\'' + ("_handleClick" + this.popoverElemetId) + '\'](\'' + _.escape(device.deviceID) + '\'); return 0;"'
 												+ ' href="javascript:void(0)">'
@@ -283,7 +299,6 @@ export class RealtimeMapComponent implements OnInit {
 												+ '</a></span>');
 				this.animatedDeviceManagerService.scheduleVehicleDataLoading(device.deviceID);
 				var info = device.latestInfo;
-				var sample = device.latestSample;
 				if(sample && this.DEBUG){
 					var content = '<div class="">Connected: ' + sample.device_connection + '</div>' +
 									'<div class="">Device status: ' + sample.device_status + '</div>';
@@ -468,8 +483,16 @@ export class RealtimeMapComponent implements OnInit {
 			if(this.appConfig.DEBUG){
 				console.log('DEBUG-MAP: syncing car features. Number of devices=' + devices.length + ', frameTime=' + new Date(frameTime));
 			}
+			if (this.aggregationMode) {
+					this.clearAllFeatures();
+			}
+			var prevAggregationMode = this.aggregationMode;
 			devices.forEach((device) => {
 				var cur = device.getAt(frameTime); // get state of the device at frameTime
+				if (cur.aggregated != prevAggregationMode) {
+					prevAggregationMode = cur.aggregated;
+					this.changeAggreagationMode(cur.aggregated);
+				}
 				var curPoint = (cur.lng && cur.lat) ? new ol.geom.Point(ol.proj.fromLonLat([cur.lng, cur.lat], undefined)) : null;
 				var curStatus = cur.status || 'normal';
 				//console.log('syncCarFeatures - Putting icon at ', [cur.lng, cur.lat])
@@ -483,13 +506,17 @@ export class RealtimeMapComponent implements OnInit {
 						//style: getCarStyle(curStatus),  //WORKAROUND: not sure why layer style not work
 						device: device,
 					});
-					if(curStatus)
+					if (cur.aggregated)
+						feature.setStyle(getGroupStyle(cur));
+					else if(curStatus)
 						feature.setStyle(getCarStyle(curStatus));
-						this.carsLayer.getSource().addFeature(feature);
+					this.carsLayer.getSource().addFeature(feature);
 					this.deviceFeatures[device.deviceID] = feature;
 				}else if(curPoint && feature){
 					// update
-					if(curStatus && curStatus !== feature.get('carStatus')){
+					if (cur.aggregated && feature.get('carStatus').device.count != cur.count) {
+						feature.setStyle(getGroupStyle(cur));
+					} else if(curStatus && curStatus !== feature.get('carStatus')){
 						feature.set('carStatus', curStatus, surpussEvent);
 						feature.setStyle(getCarStyle(curStatus)); //WORKAROUND: not sure why layer style not work
 					}
@@ -514,6 +541,29 @@ export class RealtimeMapComponent implements OnInit {
 		this.mapHelper.postComposeHandlers.push((event, frameTime) => {
 			return INV_MAX_FPS; // give delay for next frame if not other events captured
 		});
+	}
+
+	changeAggreagationMode(newMode) {
+			this.aggregationMode = newMode;
+			this.clearAllFeatures();
+			_.each(<any>this.mapItemHelpers, function(helper:any, key) {
+					if (newMode)
+						helper.stopMonitoring();
+					else	
+						helper.startMonitoring();
+			});
+	}
+
+	clearAllFeatures() {
+			var source = (<any>this.carsLayer.getSource());
+			_.each(this.deviceFeatures, function(device) {
+				source.removeFeature(device);
+			});
+			this.deviceFeatures = {};
+
+			_.each(<any>this.mapItemHelpers, function(helper:any, key) {
+				helper.clearAllItems();
+			});
 	}
 
 	ngOnInit() {
@@ -573,8 +623,49 @@ export class RealtimeMapComponent implements OnInit {
 var getCarStyle = function(status){
 	return CAR_STYLE_MAP[status] || CAR_STYLE_MAP['unknown'];
 };
+var getGroupStyle = function(device){
+	if (!device || device.count == 0) {
+		return null;
+	}
+
+	var count = device.count;
+	var alerts = device.alerts;
+	var size = 'small';
+	if (count >= 0) {
+		if (count >= 1000) {
+			size = 'x-large';
+		} else if (count >= 100) {
+			size = 'large';
+		} else if (count >= 10) {
+			size = 'medium';
+		}
+	} else {
+			size = 'x-large';  // uncountably big
+	}
+
+	var status = 'normal';
+	if (alerts) {
+		if (alerts.critical) {
+			status = 'critical';
+		} else if (alerts.troubled) {
+			status = 'troubled';
+		}
+	}
+	var countText = '' + (count >= 0 ? count : '...');
+	return new ol.style.Style({
+			image: GROUP_IMAGE_MAP[status][size],
+			text: new ol.style.Text({
+					fill: new ol.style.Fill({color: "#606060"}),
+					textAlign: "center",
+					textBaseline: "middle",
+					text: countText,
+					font: "bold 16px monospace"
+			})
+		});
+};
 var CAR_STYLES = [];
 var CAR_STYLE_MAP = {};
+var GROUP_IMAGE_MAP = {};
 (function(){
 	var data = [['normal', 'img/car-blue.png'],
 							['available', 'img/car-green.png'],
@@ -595,6 +686,30 @@ var CAR_STYLE_MAP = {};
 		CAR_STYLES.push(style);
 		CAR_STYLE_MAP[status] = style;
 	});
+	
+	var groupStatus = [{status: "normal", fillColor: "rgba(149,207,96,0.9)", borderColor: "rgba(149,207,96,0.5)"},
+							{status: "troubled", fillColor: "rgba(231,187,57,0.9)", borderColor: "rgba(231,187,57,0.5)"},
+							{status: "critical", fillColor: "rgba(241,141,73,0.9)", borderColor: "rgba(241,141,73,0.5)"}];
+	var group = [{id: 'small', radius: 15, border: 8}, 
+							{id: 'medium', radius: 30, border: 12}, 
+							{id: 'large', radius: 40, border: 14}, 
+							{id: 'x-large', radius: 60, border: 18}];
+	groupStatus.forEach(function(status) {
+		var statusImages = {};
+		group.forEach(function(item) {
+		var circle = new ol.style.Circle({
+			radius: item.radius,
+			stroke : new ol.style.Stroke({
+				color: status.borderColor,
+				width: item.border
+			}),
+			fill : new ol.style.Fill({
+				color: status.fillColor
+			})});
+			statusImages[item.id] = circle;
+		});
+		GROUP_IMAGE_MAP[status.status] = statusImages;
+	});						
 })();
 
 /**

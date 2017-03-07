@@ -8,7 +8,7 @@
 
     "d3": "github:DefinitelyTyped/DefinitelyTyped/d3/d3.d.ts#types",
     "c3": "github:DefinitelyTyped/DefinitelyTyped/c3/c3.d.ts#types",
-    "openlayers": "github:DefinitelyTyped/DefinitelyTyped/openlayers/openlayers-3.14.2.d.ts#types-2.0",
+    "openlayers": "github:DefinitelyTyped/DefinitelyTyped/openlayers/openlayers-3.14.2.d.ts#types",
     "underscore": "github:DefinitelyTyped/DefinitelyTyped/underscore/underscore.d.ts#types"
   }
 }

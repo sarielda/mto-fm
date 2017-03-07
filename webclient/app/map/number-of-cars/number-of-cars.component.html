@@ -3,7 +3,7 @@
   <span *ngFor="let counts of regionCounts$ | async">
   <div class="row">
     <div class="column-6-med column-6-xs alignRight map-Number">
-      <i class="icon-car iconMarginRight"></i>{{(counts.all >= 0) ? counts.all : '-'}}
+      <i class="icon-car iconMarginRight"></i>{{(counts.all >= 0) ? (all_anbiguous ? (counts.all + '+') : counts.all) : '-'}}
     </div>
     <div class="column-6-med column-6-xs alignLeft map-Number-Side">
       Cars in<br/>this area
@@ -62,7 +62,7 @@
       {{zone.name}}
       <span class="floatRight">
         <strong class="totalCarsNumber">{{zone.number}}</strong>
-        <strong ng-class="{cyan: zone.change === '遶奇ｿｽ', red: zone.change === '遶奇ｿｽ', blue: zone.change === '隨擾ｿｽ'}">{{zone.change}}</strong>
+        <strong ng-class="{cyan: zone.change === '驕ｶ螂��ｽｿ�ｽｽ', red: zone.change === '驕ｶ螂��ｽｿ�ｽｽ', blue: zone.change === '髫ｨ謫ｾ�ｽｿ�ｽｽ'}">{{zone.change}}</strong>
       </span>
     </div>
     -->

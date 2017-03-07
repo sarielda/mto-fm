@@ -6,9 +6,9 @@
           <tr>
             <td colspan="3" style="padding-bottom:10px;"><label for="creationGroup">Mouse click action: </label></td>
           <tr>
-            <td style="white-space:nowrap"><span><input type="radio" name="creationGroup" [(ngModel)]="creationMode" (ngModelChange)="onChangeMode()" value="none">Select</span></td>
-            <td style="white-space:nowrap"><span [hidden]="supportedItems.indexOf('event') < 0"><input type="radio" name="creationGroup" [(ngModel)]="creationMode" (ngModelChange)="onChangeMode()" value="event" [hidden]="supportedItems.indexOf('event') < 0">Create an event</span></td>
-            <td style="white-space:nowrap"><span [hidden]="supportedItems.indexOf('geofence') < 0"><input type="radio" name="creationGroup" [(ngModel)]="creationMode" (ngModelChange)="onChangeMode()" value="geofence">Create a boundary</span></td>
+            <td style="white-space:nowrap;padding-left: 5px;"><span><input type="radio" name="creationGroup" [(ngModel)]="creationMode" (ngModelChange)="onChangeMode()" value="none">Select</span></td>
+            <td style="white-space:nowrap;padding-left: 5px;"><span [hidden]="supportedItems.indexOf('event') < 0"><input type="radio" name="creationGroup" [(ngModel)]="creationMode" (ngModelChange)="onChangeMode()" value="event" [hidden]="supportedItems.indexOf('event') < 0">Create an event</span></td>
+            <td style="white-space:nowrap;padding-left: 5px;"><span [hidden]="supportedItems.indexOf('geofence') < 0"><input type="radio" name="creationGroup" [(ngModel)]="creationMode" (ngModelChange)="onChangeMode()" value="geofence">Create a geofence</span></td>
           </tr>
         </tbody>
       </table>
@@ -41,7 +41,7 @@
       </table>
     </div>
     <div [hidden]="creationMode!=='geofence'">
-      <div class="toolPageDescription">Click the Add button to create a new boundary.</div>
+      <div class="toolPageDescription">Click the Add button to create a new geofence.</div>
       <table class="toolPage">
         <tbody>
 <!--

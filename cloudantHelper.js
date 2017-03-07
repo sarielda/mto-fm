@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -41,7 +41,7 @@ var DB_UPDATE_INTERVAL = 6000; // period to update the DB from the memory image 
  */
 cloudantHelper.getDeferredDB = function(dbname, designDoc, indexes){
 	var baseWrapper = new CloudantDeferred(dbname);
-	return new CloudantDeferred(dbname, 
+	return new CloudantDeferred(dbname,
 			baseWrapper.updateDesignDoc(designDoc)
 			.then(function(){
 				return baseWrapper.updateIndexes(indexes);
@@ -60,7 +60,7 @@ CloudantDeferred.prototype.ensureDB = function(dbName){
 	var deferred = Q.defer();
 	Cloudant(CLOUDANT_OPTS, function(err, cloudant){
 		console.log('Connected to Cloudant');
-		
+
 		cloudant.db.list(function(err, all_dbs){
 			if(err)
 				return deferred.reject(err);
@@ -84,7 +84,7 @@ CloudantDeferred.prototype.ensureDB = function(dbName){
 CloudantDeferred.prototype.updateDesignDoc = function(designDoc){
 	if(!designDoc) return Q();
 	if(!designDoc._id) return Q.reject(new Error('Missing _id property in the design doc'));
-	
+
 	return this.db.then(function(db){
 		var deferred = Q.defer();
 		db.get(designDoc._id, null, function(err, body){
@@ -113,16 +113,16 @@ CloudantDeferred.prototype.updateDesignDoc = function(designDoc){
 		return deferred.promise;
 	});
 };
-	
+
 CloudantDeferred.prototype.updateIndexes = function(indexes){
 	if(!indexes || indexes.length == 0) return Q();
-	
+
 	var self = this;
 	return this.db.then(function(db){
 		var deferred = Q.defer();
 		db.index(function(er, result){
 			if(er) return deferred.reject(er);
-			
+
 			var existingIndexes = _.indexBy(result.indexes, 'name');
 			var ops = indexes.filter(function(index){
 				var existing = existingIndexes[index.name];
@@ -247,7 +247,7 @@ CloudantDeferred.prototype.find = function(params){
 
 /*
  * Cloudant Search function
- * 
+ *
  * Result:
  * {
  *   rows: [
@@ -274,7 +274,7 @@ CloudantDeferred.prototype.search = function(designname, searchname, params){
 
 /*
  * Cloudant View function
- * 
+ *
  * result: {
  *   rows: [
  *     {key: key, value: value},
@@ -362,7 +362,7 @@ cloudantHelper.createDevice = function(device, deviceDetails){
 	var devID = device.deviceID;
 	var updateTime = device.lastUpdateTime;
 	console.log('A new device ' + devID + ' is detected. Creating a device document...');
-	
+
 	var doc = {};
 	doc.deviceDetails = deviceDetails;
 	if (updateTime > 0) doc[updateTime] = device;
@@ -377,11 +377,11 @@ cloudantHelper.createDevice = function(device, deviceDetails){
 	return deferred.promise;
 };
 
-//user call back to get the device details for an unknown device 
+//user call back to get the device details for an unknown device
 //- when this return non-false object, the device will be registered
 //- otherwise, the device won't be handled
 //- this is overridden in _app.js for demo
-cloudantHelper.onGettingNewDeviceDetails = function(device) { 
+cloudantHelper.onGettingNewDeviceDetails = function(device) {
 	return null;
 };
 
@@ -391,11 +391,11 @@ cloudantHelper.getDeviceDetails = function(device){
 	if (Array.isArray(device)){
 		return Q.all(device.map(cloudantHelper.getDeviceDetails));
 	}
-	
+
 	// handle single device
 	if (!device) return Q(); // no device....
 	var devID = device.deviceID;
-	
+
 	function cloneAndExtendDevice(body){
 		var r = _.clone(device);
 		_.extend(r, _.pick(body, function(value, key, object) {
@@ -403,7 +403,7 @@ cloudantHelper.getDeviceDetails = function(device){
 							}));
 		return r;
 	}
-	
+
 	var deferred = Q.defer();
 	var db = cloudant.db.use(CLOUDANT_DB_NAME);
 	db.find({selector:{_id:devID}, fields:["deviceDetails"]}, function(er, result) {
@@ -455,7 +455,7 @@ cloudantHelper.getExistingDeviceDetails = function(device){
 	if (device && Array.isArray(device)){
 		return Q.all(device.map(cloudantHelper.getExistingDeviceDetails));
 	}
-	
+
 	// handle single device
 
 	var deferred = Q.defer();
@@ -522,7 +522,7 @@ cloudantHelper.updateDeviceDetails = function(device, deviceDetails){
 				return deferred.reject(err);
 			}
 		}
-		
+
 		// replace deviceDetails with given values and push it back to db
 		body.deviceDetails = deviceDetails;
 		db.insert(body, null, function(err, body) {
@@ -544,14 +544,14 @@ cloudantHelper.removeDeviceDetails = function(device){
 		console.error("invalid parameter: device is not specified.");
 		return deferred.reject();
 	}
-	
+
 	var db = cloudant.db.use(CLOUDANT_DB_NAME);
 	db.get(device.deviceID, null, function(err, body) {
 		if (err) {
 			console.error(err);
 			return deferred.reject(err);
 		}
-		
+
 		db.destroy(body._id, body._rev, function(err, data) {
 			if (err) {
 				console.error(err);
@@ -583,7 +583,7 @@ cloudantHelper.cleanupStaleReservations = function(){
 			.map(function(res){
 				var deferred = Q.defer();
 				console.log('Canceling stale reservation...: ' + JSON.stringify({
-							status: res.status, 
+							status: res.status,
 							dropOffTime: new Date(parseInt(res.dropOffTime)*1000).toISOString(),
 						}));
 				res.status = 'canceled'; // update the reservation status to canceled
@@ -631,7 +631,7 @@ cloudantHelper.searchIndex = function(db, ddocName, indexName, opts){
 	return deferred.promise;
 }
 
-/* 
+/*
  * The following characters require escaping if you want to search on them: + - && || ! ( ) { } [ ] ^ " ~ * ? : \ /
  * Escape these with a preceding backslash character.
  */

@@ -3,7 +3,7 @@
  *
  * Licensed under the IBM License, a copy of which may be obtained at:
  *
- * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AEGGZJ&popup=y&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
+ * http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?li_formnum=L-DDIN-AHKPKY&popup=n&title=IBM%20IoT%20for%20Automotive%20Sample%20Starter%20Apps%20%28Android-Mobile%20and%20Server-all%29
  *
  * You may not use this file except in compliance with the license.
  */
@@ -16,6 +16,7 @@ var moment = require("moment");
 var dbClient = require('./../cloudantHelper.js');
 var driverInsightsAsset = require('./asset.js');
 var ruleGenerator = require('./ruleGenerator.js');
+var assetApiFactory = require("./assetApi/assetApiFactory.js");
 
 var debug = require('debug')('geofence');
 debug.log = console.log.bind(console);
@@ -60,9 +61,16 @@ _.extend(driverInsightsGeofence, {
 	db: null,
 
 	_init: function(){
-		this.db = dbClient.getDB(DB_NAME, this._getDesignDoc());
+		if (this.isAvailable()) {
+			this.db = dbClient.getDB(DB_NAME, this._getDesignDoc());
+		}
 	},
 
+	isAvailable: function() {
+		var api = assetApiFactory.getAssetApi();
+		return api && api.isNative && api.isNative();
+	},
+	
 	queryGeofence: function(min_latitude, min_longitude, max_latitude, max_longitude) {
 		var deferred = Q.defer();
 		Q.when(this._queryGeofenceDoc(min_longitude, min_latitude, max_longitude, max_latitude), function(response) {
@@ -92,36 +100,57 @@ _.extend(driverInsightsGeofence, {
 	 * Create an unique Id for rule xml. RuleID must be unique within VehicleActionRule rule xmls. They must be managed by application. 
 	 * If the application create VehicleActionRule rules other than geofence, ids for those rules must be taken care of to calculate the uniqueness.
 	 */
-	_getAvailableRuleXMLId: function() {
+	_getAvailableRuleId: function() {
 		var deferred = Q.defer();
+		var self = this;
 		Q.when(this.db, function(db) {
 			db.view(DB_NAME, "geofenceRuleXmlIds", {}, function(err, body) {
 				if (err) {
 					console.error(err);
 					return deferred.reject(err);
 				} else {
-					var result = _.map(body.rows, function(value) {
-						return value.value;
-					});						
+					var rule_ids = _.map(body.rows, function(value) {
+						return value.key;
+					});
+					var rule_id;
 					for (var i = 0; i < GEOFENCE_MAX_RULE_ID_NUM; i++) {
-						var rule_xml_id = GEOFENCE_RULE_TYPE + i;
-						if (!_.contains(result, rule_xml_id)) {
-							deferred.resolve(rule_xml_id);
-							return;
+						rule_id = self._id();
+						if (!_.contains(rule_ids, rule_id)) {
+							break;
 						}
 					}
+
+					var rule_xml_ids = _.map(body.rows, function(value) {
+						return value.value;
+					});
+					var rule_xml_id = GEOFENCE_RULE_TYPE + 1;
+					for (var i = 0; i < GEOFENCE_MAX_RULE_ID_NUM; i++) {
+						if (!_.contains(rule_xml_ids, rule_xml_id)) {
+							break;
+						}
+						rule_xml_id++;
+					}
+					deferred.resolve({id: rule_id, xmlid: rule_xml_id});
 					deferred.reject({message: "no id is available", statusCode: 500});
 				}
 			});
 		});
 		return deferred.promise;
 	},
+
+	_id: function() {
+		function s4() {
+			return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+		}
+		return (s4() + s4()).toUpperCase();
+	},
 	
 	createGeofence: function(geofence) {
 		var self = this;
 		var deferred = Q.defer();
-		Q.when(this._getAvailableRuleXMLId(), function(rule_xml_id) {
-			var rule = {description: "geofence rule", type: "Action", status: "active"};
+		Q.when(this._getAvailableRuleId(), function(ids) {
+			var rule = {rule_id: ids.id, description: "geofence rule", type: "Action", status: "active"};
+			var rule_xml_id = ids.xmlid;
 			Q.when(driverInsightsAsset.addRule(rule, self._createGeofenceEmptyRuleXML(rule_xml_id)), function(response) {
 				var promises = [];
 				var geofence_id = response.id;
@@ -145,13 +174,18 @@ _.extend(driverInsightsGeofence, {
 	
 	updateGeofence: function(geofence_id, geofence) {
 		var deferred = Q.defer();
-		var rule = {description: "geofence rule", type: "Action", status: "active"};
-		var ruleXML = this._createGeofenceRuleXML(geofence_id, geofence);
-		var promises = [];
-		promises.push(driverInsightsAsset.updateRule(geofence_id, rule, ruleXML, true));
-		promises.push(this._updateDoc(geofence_id, {geofence: geofence}));
-		Q.all(promises).then(function(data) {
-			deferred.resolve({id: geofence_id});
+		var self = this;
+		Q.when(this._getGeofenceDoc(geofence_id), function(doc) {
+			var rule = {description: "geofence rule", type: "Action", status: "active"};
+			var ruleXML = self._createGeofenceRuleXML(geofence_id, geofence, doc.rule_xml_id);
+			var promises = [];
+			promises.push(driverInsightsAsset.updateRule(geofence_id, rule, ruleXML, true));
+			promises.push(self._updateDoc(geofence_id, {geofence: geofence}));
+			Q.all(promises).then(function(data) {
+				deferred.resolve({id: geofence_id});
+			}, function(err) {
+				deferred.reject(err);
+			});
 		}, function(err) {
 			deferred.reject(err);
 		});

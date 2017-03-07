@@ -17,7 +17,7 @@ declare var $; // jQuery from <script> tag in the index.html
 })
 export class ItemToolComponent implements OnInit {
   itemMap = null;
-  supportedItems = ["event"/*, "geofence"*/];
+  supportedItems = ["event"];
   eventTypes = [];
   selectedEventType = null;
   eventDirections = [{label: "North", value: 0}, {label: "North East", value: 45}, {label: "East", value: 90}, {label: "South East", value: 135},
@@ -43,6 +43,11 @@ export class ItemToolComponent implements OnInit {
         });
         this.eventTypes = data;
         this.selectedEventType = data[0];
+      }
+    });
+    this.geofenceService.isAvailable().subscribe(data => {
+      if (data) {
+        this.supportedItems.push("geofence");
       }
     });
   }

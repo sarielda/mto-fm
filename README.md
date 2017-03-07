@@ -1,4 +1,4 @@
-# IBM IoT for Automotive - Fleet Management Starter Application
+# IBM IoT for Automotive (Bluemix) - Fleet Management Starter Application
 
 The IBM IoT for Automotive - Fleet Management Starter Application demonstrates how quickly you can build an app on IBM Bluemix to manage and monitor a fleet of vehicles in real time.
 
@@ -19,9 +19,11 @@ The Fleet Management Starter Application uses the following services that are av
 - [IoT for Automotive (Experimental)](https://console.ng.bluemix.net/catalog/services/iot-for-automotive/)
 - [Cloudant NoSQL DB](https://console.ng.bluemix.net/catalog/services/cloudant-nosql-db/)
 
+You can also use the Fleet Management Starter Application together with an instance of the IBM IoT for Automotive SaaS offering on IBM SoftLayer. For more information, see [IBM for Automotive (SaaS) - Fleet Management Starter Application](https://github.com/ibm-watson-iot/iota-starter-server-fleetmanagement/README_For_SaaS.md ).
+ 
 ## Deploying the app on Bluemix
 
-You can automatically deploy an instance of the Fleet Management Starter Application on Bluemix by clicking [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ibm-watson-iot/iota-starter-server-fm.git). You can also deploy the app manually.
+You can automatically deploy an instance of the Fleet Management Starter Application on Bluemix by clicking [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ibm-watson-iot/iota-starter-server-fm.git). You can also deploy the app manually. Note that you have to do the service activation step mentioned below after the automatic or manual deployment.
 
 To manually deploy your own instance of the Fleet Management Starter Application on Bluemix, complete all of the following steps:
 
@@ -29,9 +31,9 @@ To manually deploy your own instance of the Fleet Management Starter Application
 2. Download and install the [Cloud-foundry CLI][cloud_foundry_url] tool.
 3. Clone the Fleet Management Starter Application to your local environment by using the following console command:  
 
-   ```  
-   git clone https://github.com/ibm-watson-iot/iota-starter-server-fm.git  
-   ```  
+  ```  
+  git clone https://github.com/ibm-watson-iot/iota-starter-server-fm.git  
+  ```  
 
 4. Change to the directory that you created.
 5. Edit the `manifest.yml` file and change the values of `<name>` and `<host>` to something unique.
@@ -45,22 +47,22 @@ To manually deploy your own instance of the Fleet Management Starter Application
     path: .
     instances: 1
          :
-   ```
+  ```
    The host value is used to generate your application URL, which is in the following syntax:  
    `<host>.mybluemix.net`.
 
 6. Install the NPM package by using the following command. The installer observes the dependencies that are specified in your `package.json` file.
-   ```
+  ```
   $ cd ./webclient
   $ npm install
-   ```
+  ```
 7. Convert TypeScript to JavaScript:
 
-   ```
-   $ npm run tsc
-   $ npm run gulp
-   $ cd ..
-   ```
+  ```
+  $ npm run tsc
+  $ npm run gulp
+  $ cd ..
+  ```
 
 8. By using the command line tool, connect to Bluemix and log in when prompted:
 
@@ -202,6 +204,9 @@ The tracked data is collected from the `VCAP_APPLICATION` and `VCAP_SERVICES` en
 ### Disabling deployment tracking
 
 You can disable the Deployment Tracker service by removing `require("cf-deployment-tracker-client").track();` from the beginning of the `app.js` server file.
+
+## Questions, comments or suggestions
+For your questions, comments or suggestions to us, visit [Watson IoT for Automotive Application community site] (https://www.ibm.com/developerworks/community/groups/service/html/communitystart?communityUuid=3b06ca1c-fd7c-4a59-a888-e5e3a8384091).
 
 ## Useful links
 - [IBM Bluemix](https://bluemix.net/)
