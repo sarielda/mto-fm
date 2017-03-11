@@ -139,6 +139,9 @@ angular.module('htmlClient')
 				self.tripRouteIndex = 0;
 				self.tripRoute = routeArray;
 				self.prevLoc = routeArray[0];
+				if (self.prevLoc.heading === undefined) {
+					self.prevLoc.heading = sheading;
+				}
 				deferred.resolve(routeArray);
 			})["catch"](function(error){
 				deferred.reject(error);

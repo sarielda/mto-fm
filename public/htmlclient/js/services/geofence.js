@@ -12,7 +12,27 @@
  */
 angular.module('htmlClient')
 .factory('geofenceService', function($q, $http, mobileClientService) {
+
 	var service = {
+		isAvailable: function() {
+		   var deferred = $q.defer();
+		   if (this.available !== undefined) {
+			   deferred.resolve(this.available);
+		   } else {
+			   var self = this;
+				var url = "/user/capability/geofence";
+	 		    $http(mobileClientService.makeRequestOption({
+					 method: "GET",
+					 url: url
+				})).success(function(data, status){
+					self.available = !!data.available;
+					deferred.resolve(data.available);
+	 		    }).error(function(error, status){
+					deferred.reject(error);
+				});
+		   }
+ 		    return deferred.promise;
+		},
 		/*
 		 * geofence json
 		 * {
@@ -29,40 +49,56 @@ angular.module('htmlClient')
 		 * 		}
 		 * }
 		 */
-
+	  
 	   queryGeofences: function(params) {
-		   var url = "/user/geofence";
-		   var prefix = "?";
-		   for (var key in params) {
-			   url += (prefix + key + "=" + params[key]);
-			   prefix = "&";
-		   }
-		   console.log("query event: " + url);
-			
 		   var deferred = $q.defer();
-		   $http(mobileClientService.makeRequestOption({
-			   method: "GET",
-			   url: url
-		   })).success(function(data, status){
-			   deferred.resolve(data);
-		   }).error(function(error, status){
-			   deferred.reject({error: error, status: status});
+		   this.isAvailable().then(function(b) {
+			   if (!b) {
+				   deferred.resolve([]);
+				   return;
+		   	   }
+			   var url = "/user/geofence";
+			   var prefix = "?";
+			   for (var key in params) {
+				   url += (prefix + key + "=" + params[key]);
+				   prefix = "&";
+			   }
+			   console.log("query geofence: " + url);
+				
+			   $http(mobileClientService.makeRequestOption({
+				   method: "GET",
+				   url: url
+			   })).success(function(data, status){
+				   deferred.resolve(data);
+			   }).error(function(error, status){
+				   deferred.reject({error: error, status: status});
+			   });
+		   }, function(error) {
+			   deferred.reject(error);
 		   });
 		   return deferred.promise;
 	   },
 
 	   getGeofence: function(event_id) {
-		   var url = "/user/geofence?geofence_id=" + event_id;
-		   console.log("get geofence: " + url);
-	     
 		   var deferred = $q.defer();
-		   $http(mobileClientService.makeRequestOption({
-			   method: "GET",
-			   url: url
-		   })).success(function(data, status){
-			   deferred.resolve(data);
-		   }).error(function(error, status){
-			   deferred.reject({error: error, status: status});
+		   this.isAvailable().then(function(b) {
+			   if (!b) {
+				   deferred.resolve([]);
+				   return;
+		   	   }
+			   var url = "/user/geofence?geofence_id=" + event_id;
+			   console.log("get geofence: " + url);
+		     
+			   $http(mobileClientService.makeRequestOption({
+				   method: "GET",
+				   url: url
+			   })).success(function(data, status){
+				   deferred.resolve(data);
+			   }).error(function(error, status){
+				   deferred.reject({error: error, status: status});
+			   });
+		   }, function(error) {
+			   deferred.reject(error);
 		   });
 		   return deferred.promise;
 	   },
