@@ -216,10 +216,16 @@ _.extend(driverInsightsProbe, {
 		var node = this.vdhConfig;
 		var api = "/carProbe";
 		var url = node.baseURL + api;
-		var prefix = '?';
+		var prefix = "?";
+
+		var queryParams = [];
 		if (node.tenant_id) {
-			url += ('?tenant_id=' + node.tenant_id);
-			prefix = '&';
+			queryParams.push('tenant_id='+node.tenant_id);
+			previx = "&";
+		}
+		if (queryParams.length > 0) {
+			url += ('?' + queryParams.join('&'));
+			
 		}
 		var options = this._addAuthOption(node, {
 				method: "GET",
@@ -261,9 +267,19 @@ _.extend(driverInsightsProbe, {
 		var deferred = Q.defer();
 		var node = this.vdhConfig;
 		var api = "/carProbe";
+		var url = node.baseURL + api;
+
+		var queryParams = [];
+		if (node.tenant_id) {
+			queryParams.push('tenant_id='+node.tenant_id);
+		}
+		if (queryParams.length > 0) {
+			url += ('?' + queryParams.join('&'));
+		}
+
 		var options =  this._addAuthOption(node, {
 			method: "GET",
-			url: node.baseURL + api + "?tenant_id=" + node.tenant_id,
+			url: url,
 			qs: qs
 		});
 		debug("getCarProbe(url): " + options.url);
@@ -296,8 +312,13 @@ _.extend(driverInsightsProbe, {
 		var node = this.driverInsightsConfig;
 		var api = "/datastore/carProbe/dateList";
 		var url = node.baseURL + api;
+
+		var queryParams = [];
 		if (node.tenant_id) {
-			url += ("?tenant_id=" + node.tenant_id);
+			queryParams.push('tenant_id='+node.tenant_id);
+		}
+		if (queryParams.length > 0) {
+			url += ('?' + queryParams.join('&'));
 		}
 		var options = this._addAuthOption(node, {
 				method: 'GET',

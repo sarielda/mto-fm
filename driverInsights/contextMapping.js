@@ -19,12 +19,13 @@ var contextMapping = {
 		var userVcapSvc = JSON.parse(process.env.USER_PROVIDED_VCAP_SERVICES || '{}');
 		var vcapSvc = userVcapSvc.iotforautomotive || VCAP_SERVICES.iotforautomotive;
 		if (vcapSvc) {
-			var dirverInsightsCreds = vcapSvc[0].credentials;
+			var creds = vcapSvc[0].credentials;
 			return {
-				baseURL: dirverInsightsCreds.api + "mapinsights",
-				tenant_id : dirverInsightsCreds.tenant_id,
-				username : dirverInsightsCreds.username,
-				password : dirverInsightsCreds.password
+				baseURL: (creds.mapinsights && creds.mapinsights.api) ? 
+						creds.mapinsights.api : (creds.api + "mapinsights"),
+				tenant_id : creds.tenant_id,
+				username : creds.username,
+				password : creds.password
 			};
 		}
 		throw new Exception("!!! no provided credentials for DriverInsights. using shared one !!!");

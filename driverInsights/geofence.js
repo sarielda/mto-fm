@@ -277,7 +277,7 @@ _.extend(driverInsightsGeofence, {
 				ruleJson.target.areas = [geofenceJson.target.area];
 			}
 		}
-		var message = geofenceJson.message || (range === "out" ? "Vehicle is out of bounds" : "Vehicle is in bounds");
+		var message = geofenceJson.message || (range === "out" ? "Vehicle is out of the region" : "Vehicle is in the region");
 		ruleJson.actions = geofenceJson.actions
 						|| {vehicle_actions: [{
 							message: message,

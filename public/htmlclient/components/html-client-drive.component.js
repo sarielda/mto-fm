@@ -1208,12 +1208,9 @@
 		var self = this;
 	    layer.setStyle(function(feature, resolution) {
 	        self.styles["out"] = new ol.style.Style({
-	            fill: new ol.style.Fill({
-	              color: [0, 0, 255, 0.1]
-	            }),
 	            stroke: new ol.style.Stroke({
-	              color: [0, 0, 255, 0.3],
-	              width: 2
+	                color: [255, 0, 128, 0.7],
+	                width: 2
 	            })
 	        });
 	        self.styles["in"] = new ol.style.Style({
@@ -1221,8 +1218,8 @@
 	              color: [255, 0, 128, 0.1]
 	            }),
 	            stroke: new ol.style.Stroke({
-	              color: [255, 0, 128, 0.3],
-	              width: 2
+	                color: [255, 0, 128, 0.7],
+	                width: 2
 	            })
 	        });
 	        self.targetStyle = new ol.style.Style({
@@ -1257,7 +1254,8 @@
 
 	GeofenceHelper.prototype.getFeatureStyle = function getFeatureStyle(feature) {
 		if (feature.get("area")) {
-			return this.targetStyle;
+			return null;
+//			return this.targetStyle;
 		}
 		var geofence = feature.get("item");
 		if (!geofence) {
