@@ -164,6 +164,7 @@ var maximoAssetApi = {
 				var assetCreds = iot4a_cred.maximo;
 		        var maximoCreds = {
 		        	baseURL: assetCreds.api ? assetCreds.api : (iot4a_cred.api + "maximo"),
+		        	internalURL: assetCreds.internalURL,
 		        	orgid: assetCreds.orgid,		
 		        	classificationid: assetCreds.classificationid || "STARTER APPLICATION",		
 		            username: assetCreds.username,
@@ -580,6 +581,10 @@ var maximoAssetApi = {
 				var member = result.member;
 				if (id) {
 					if (member && member.length > 0) {
+						if (config.internalURL) {
+							// workaround for secure gateway. maximo api may return internal resource uri
+							member[0].href = member[0].href.replace(config.internalURL, config.baseURL);
+						}
 						deferred.resolve(attributes ? self._getAssetObject(context, member[0]) : member[0]);
 			        } else {
 						deferred.reject({statusCode: 404, message: "Not found", response: {statusCode: 404, message: "Not found"}});

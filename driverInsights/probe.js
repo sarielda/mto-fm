@@ -221,7 +221,7 @@ _.extend(driverInsightsProbe, {
 		var queryParams = [];
 		if (node.tenant_id) {
 			queryParams.push('tenant_id='+node.tenant_id);
-			previx = "&";
+			prefix = "&";
 		}
 		if (queryParams.length > 0) {
 			url += ('?' + queryParams.join('&'));

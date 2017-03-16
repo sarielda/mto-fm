@@ -348,7 +348,7 @@ _.extend(driverInsightsAlert, {
 			if(probes.length > 0){
 				var mo_ids = probes.map(function(probe){return probe.mo_id;});
 				self.getAlertsForVehicles(mo_ids, includeClosed, limit).then(function(results){
-					return results;
+					deferred.resolve(results);
 				});
 			}else{
 				deferred.resolve({alerts: []});
