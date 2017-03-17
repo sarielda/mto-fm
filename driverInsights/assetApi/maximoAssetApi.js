@@ -306,6 +306,9 @@ var maximoAssetApi = {
 			Q.when(self._addAditionalInfo(context, asset, existing), function(asset) {
 				var maximoAsset = self._getMaximoObject(context, asset);
 				Q.when(self._request(url, 'POST', method_override, maximoAsset), function(result) {
+					if (!result) {
+						result = {id: asset.mo_id, siteid: asset.siteid};
+					}
 					if (refresh) {
 						Q.when(self.refreshAsset(context), function(refreshed){
 							deferred.resolve(result);
@@ -471,6 +474,7 @@ var maximoAssetApi = {
 	        id += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random))
 	                .toString(16);
 	    }
+	    id = id.toUpperCase();
 
 	    var self = this;
 	    if (!deferred)

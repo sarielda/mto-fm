@@ -111,8 +111,12 @@ _.extend(probe, {
 			
 			return Q.when(self._getAssetInfo(deviceId, deviceType), function(assetInfo) {
 				// Convert payload to car probe
+				var mo_id = assetInfo.vehicleId;
+				if (assetInfo.siteId) {
+					mo_id = assetInfo.siteId + ":" + mo_id;
+				}
 				var probe = {
-					mo_id: assetInfo.vehicleId,
+					mo_id: mo_id,
 					trip_id: payload.trip_id,
 					lng: payload.lng,
 					lat: payload.lat,

@@ -189,6 +189,7 @@ _.extend(iotpPdapterAsset, {
 						}
 						doc.assetInfo = {
 								vehicleId: vehicle.mo_id, 
+								siteId: vehicle.siteid,
 								driverId: driverId, 
 								deviceId: deviceId, 
 								deviceType: deviceType
@@ -224,6 +225,9 @@ _.extend(iotpPdapterAsset, {
 			Q.when(self.getAssetInfo(deviceId, deviceType), function(assetInfo) {
 				Q.when(driverInsightsAsset.updateVehicle(assetInfo.vehicleId, vehicle), function(response) {
 					vehicle.mo_id = response.id;
+					if (response.siteid) {
+						vehicle.siteid = response.siteid;
+					}
 					deferred.resolve(vehicle);
 				})["catch"](function(error) {
 					console.error(error);
@@ -607,6 +611,9 @@ _.extend(iotpPdapterAsset, {
 		Q.when(this._createVehicleFromDevice(deviceId, deviceType, isActive, vendors), function(vehicle) {
 			Q.when(driverInsightsAsset.addVehicle(vehicle, noRefresh), function(response) {
 				vehicle.mo_id = response.id;
+				if (response.siteid) {
+					vehicle.siteid = response.siteid;
+				}
 				deferred.resolve(vehicle);
 			})["catch"](function(error) {
 				deferred.reject(error);
