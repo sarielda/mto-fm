@@ -9,6 +9,7 @@
  */
 import * as ol from "openlayers";
 import { Injectable } from "@angular/core";
+import { Observable } from 'rxjs/Observable';
 import { GeofenceService } from "./iota-geofence.service";
 import{ MapItemHelper } from "./map-item-helper";
 import{ Item } from "./map-item-helper";
@@ -235,7 +236,10 @@ export class MapGeofenceHelper extends MapItemHelper<Geofence> {
 
   // query items within given area
   public queryItems(min_longitude: number, min_latitude: number, max_longitude: number, max_latitude: number) {
-    return this.isAvailable && this.geofenceService.queryGeofences({
+    if (!this.isAvailable) {
+      return Observable.of([]);
+    }
+    return this.geofenceService.queryGeofences({
         min_latitude: min_latitude,
         min_longitude: min_longitude,
         max_latitude: max_latitude,
@@ -249,7 +253,10 @@ export class MapGeofenceHelper extends MapItemHelper<Geofence> {
 
   // get item with id
   public getItem(id: string) {
-    return this.isAvailable && this.geofenceService.getGeofence(id).map(data => {
+    if (!this.isAvailable) {
+      return Observable.of(null);
+    }
+    return this.geofenceService.getGeofence(id).map(data => {
       return new Geofence(data);
     });
   }

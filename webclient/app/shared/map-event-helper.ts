@@ -151,7 +151,7 @@ export class MapEventHelper extends MapItemHelper<Event> {
     let coordinates: ol.Coordinate = [event.s_longitude || 0, event.s_latitude || 0];
     let position = ol.proj.fromLonLat(coordinates, undefined);
     let feature = new ol.Feature({geometry: new ol.geom.Point(position), item: event});
-    console.log("created an event feature : " + event.event_id);
+//    console.log("created an event feature : " + event.event_id);
     return [feature];
   }
 

@@ -1159,7 +1159,7 @@
 	    var coordinates = [event.s_longitude || 0, event.s_latitude || 0];
 	    var position = ol.proj.fromLonLat(coordinates, undefined);
 	    var feature = new ol.Feature({geometry: new ol.geom.Point(position), item: event, affected: false});
-	    console.log("created an event feature : " + event.event_id);
+//	    console.log("created an event feature : " + event.event_id);
 	    return feature;
 	};
 	
