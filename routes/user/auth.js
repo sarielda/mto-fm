@@ -20,8 +20,8 @@ var router = module.exports.router = require('express').Router();
 var basicAuth = require('basic-auth');
 var appEnv = require("cfenv").getAppEnv();
 
-var APP_USER = process.env.APP_USER || "starter";
-var APP_PASSWORD = process.env.APP_PASSWORD || "Starter4Iot";
+var APP_USER = process.env.APP_USER || "sari";
+var APP_PASSWORD = process.env.APP_PASSWORD || "mto";
 
 //basic authentication
 var authenticate = function(req,res,next){
