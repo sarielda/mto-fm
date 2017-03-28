@@ -19,11 +19,11 @@ export class LocationService {
   //   - the default zoom value is 15
   //
   areas: MapArea[] = [
-    {id: 'vegas1'  , name: 'MGM Grand, Las Vegas', center:  [-115.1664377,36.102894]},
-    {id: 'vegas2' ,name: 'Mandalay Bay, Las Vegas', center:  [-115.177541,36.093703]},
-    {id: 'munch1'  ,name: 'Hellabrunn Zoo, Munich', center:  [11.558721,48.100317]},
-    {id: 'munch2'  ,name: 'Nymphenburg Palace, Munich', center:  [11.555974,48.176261]},
-    {id: 'tokyo1', name: 'Tokyo, Japan', center: [139.731992, 35.709026] },
+    {id: 'toronto1'  , name: 'Toronto', center:  [-79.3831842,43.653226]},
+    {id: 'markham1' ,name: 'Markham', center:  [-79.3370188,43.8561002]},
+    {id: 'oshawa1'  ,name: 'Oshawa', center:  [-78.8657912,43.8970929]},
+    {id: 'niagara1'  ,name: 'Niagara Falls', center:  [-79.0849436,43.0895577]},
+    {id: 'stcatharines1', name: 'St. Catharines', center: [-79.2468625, 43.1593745] },
   ];
 
   //
@@ -35,9 +35,9 @@ export class LocationService {
   // Region is wider than area, e.g. to track the number of cars
   //
   regions: MapArea[] = [
-    {id: 'vegas'  ,name: 'Las Vegas', extent: [-116.26637642089848,35.86905016413695,-114.00868599121098,36.423521308323046]},
-    {id: "munich" ,name: 'Munich, Germany', extent: [10.982384418945298,48.01255711693946,12.111229633789048,48.24171763772631]},
-    {id: 'tokyo'  ,name: 'Tokyo, Japan', extent:  [139.03856214008624,35.53126066670448,140.16740735493002,35.81016922341598]},
+    //{id: 'vegas'  ,name: 'Las Vegas', extent: [-116.26637642089848,35.86905016413695,-114.00868599121098,36.423521308323046]},
+    //{id: "munich" ,name: 'Munich, Germany', extent: [10.982384418945298,48.01255711693946,12.111229633789048,48.24171763772631]},
+    //{id: 'tokyo'  ,name: 'Tokyo, Japan', extent:  [139.03856214008624,35.53126066670448,140.16740735493002,35.81016922341598]},
     {id: "toronto",name: 'Toronto, Canada', extent: [-80.69297429492181,43.57305259767264,-78.43528386523431,44.06846938917488]},
   ];
 
